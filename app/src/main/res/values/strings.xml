@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Brainfuck Interpreter</string>
+    <string name="pointerNext" translatable="false"><![CDATA[>]]></string>
+    <string name="pointerPrevious" translatable="false"><![CDATA[<]]></string>
+    <string name="backspace_xs">backspace</string>
+    <string name="increment" translatable="false">+</string>
+    <string name="decrement" translatable="false">-</string>
+    <string name="output" translatable="false">.</string>
+    <string name="bracket_open" translatable="false">[</string>
+    <string name="bracket_close" translatable="false">]</string>
+    <string name="input" translatable="false">,</string>
+    <string name="edit_text_hint">Start coding</string>
+    <string name="run">Run</string>
+    <string name="ok">OK</string>
+    <string name="delay">Delay</string>
+    <string name="no_delay">No delay</string>
+    <string name="delay_ms_format" formatted="false">%d ms</string>
+    <string name="error">Error</string>
+    <string name="error_maximum_cells">Error: there is a maximum of 100 memory cells</string>
+</resources>
