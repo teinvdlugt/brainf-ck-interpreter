@@ -125,120 +125,134 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
             public void run() {
                 while (i < code.length() && running) {
                     char token = code.charAt(i);
-                    if (token == '>') {
-                        ptr++;
-                        i++;
+                    try {
+                        if (token == '>') {
+                            ptr++;
+                            i++;
 
-                        if (ptr >= 100) {
-                            outputTV.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    outputTV.setVisibility(View.VISIBLE);
-                                    outputTV.setText(R.string.error_maximum_cells);
-                                }
-                            });
-                            break;
-                        }
-
-                        final int movedPointer = ptr;
-                        cellsLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                cellsLayout.movePointer(movedPointer);
+                            if (ptr >= 100) {
+                                outputTV.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        outputTV.setVisibility(View.VISIBLE);
+                                        outputTV.setText(R.string.error_maximum_cells);
+                                    }
+                                });
+                                break;
                             }
-                        });
-                    } else if (token == '<') {
-                        ptr--;
-                        i++;
 
-                        if (ptr < 0) {
-                            outputTV.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    outputTV.setVisibility(View.VISIBLE);
-                                    outputTV.setText(R.string.error);
-                                }
-                            });
-                            break;
-                        }
-
-                        final int movedPointer = ptr;
-                        cellsLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                cellsLayout.movePointer(movedPointer);
-                            }
-                        });
-                    } else if (token == '+') {
-                        bytes[ptr]++;
-                        i++;
-
-                        final int index = ptr;
-                        final byte text = bytes[ptr];
-                        cellsLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                cellsLayout.setText(index, text);
-                            }
-                        });
-                    } else if (token == '-') {
-                        bytes[ptr]--;
-                        i++;
-
-                        final int index = ptr;
-                        final byte text = bytes[ptr];
-                        cellsLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                cellsLayout.setText(index, text);
-                            }
-                        });
-                    } else if (token == ',') {
-                        if (input == -1) {
+                            final int movedPointer = ptr;
                             cellsLayout.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    askForInput();
+                                    cellsLayout.movePointer(movedPointer);
                                 }
                             });
-                            break;
-                        } else {
-                            bytes[ptr] = input;
+                        } else if (token == '<') {
+                            ptr--;
                             i++;
-                            input = -1;
+
+                            if (ptr < 0) {
+                                outputTV.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        outputTV.setVisibility(View.VISIBLE);
+                                        outputTV.setText(R.string.error);
+                                    }
+                                });
+                                break;
+                            }
+
+                            final int movedPointer = ptr;
+                            cellsLayout.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cellsLayout.movePointer(movedPointer);
+                                }
+                            });
+                        } else if (token == '+') {
+                            bytes[ptr]++;
+                            i++;
 
                             final int index = ptr;
-                            final byte text = input;
+                            final byte text = bytes[ptr];
                             cellsLayout.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     cellsLayout.setText(index, text);
                                 }
                             });
+                        } else if (token == '-') {
+                            bytes[ptr]--;
+                            i++;
+
+                            final int index = ptr;
+                            final byte text = bytes[ptr];
+                            cellsLayout.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cellsLayout.setText(index, text);
+                                }
+                            });
+                        } else if (token == ',') {
+                            if (input == -1) {
+                                cellsLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        askForInput();
+                                    }
+                                });
+                                break;
+                            } else {
+                                bytes[ptr] = input;
+                                i++;
+                                input = -1;
+
+                                final int index = ptr;
+                                final byte text = input;
+                                cellsLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        cellsLayout.setText(index, text);
+                                    }
+                                });
+                            }
+                        } else if (token == '.') {
+                            final String text = String.valueOf((char) bytes[ptr]);
+                            outputTV.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    outputTV.setVisibility(View.VISIBLE);
+                                    outputTV.append(text);
+                                }
+                            });
+
+                            i++;
+                        } else if (token == '[') {
+                            if (bytes[ptr] == 0) {
+                                i = matchingClosingBracket(i) + 1;
+                            } else {
+                                i++;
+                            }
+                        } else if (token == ']') {
+                            if (bytes[ptr] == 0) {
+                                i++;
+                            } else {
+                                i = matchingOpeningBracket(i) + 1;
+                            }
                         }
-                    } else if (token == '.') {
-                        final String text = String.valueOf((char) bytes[ptr]);
+                    } catch (StringIndexOutOfBoundsException e) {
+                        // Exception can be thrown when invoking matchingClosingBracket()
+                        // while there is none
+                        e.printStackTrace();
                         outputTV.post(new Runnable() {
                             @Override
                             public void run() {
                                 outputTV.setVisibility(View.VISIBLE);
-                                outputTV.append(text);
+                                outputTV.setText(R.string.error);
                             }
                         });
-
-                        i++;
-                    } else if (token == '[') {
-                        if (bytes[ptr] == 0) {
-                            i = matchingClosingBracket(i) + 1;
-                        } else {
-                            i++;
-                        }
-                    } else if (token == ']') {
-                        if (bytes[ptr] == 0) {
-                            i++;
-                        } else {
-                            i = matchingOpeningBracket(i) + 1;
-                        }
+                        break;
                     }
 
                     try {
