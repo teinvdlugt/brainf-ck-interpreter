@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Brainfuck Interpreter</string>
+    <string name="app_name">Brainf*ck Interpreter</string>
     <string name="pointerNext" translatable="false"><![CDATA[>]]></string>
     <string name="pointerPrevious" translatable="false"><![CDATA[<]]></string>
     <string name="backspace_xs">backspace</string>
