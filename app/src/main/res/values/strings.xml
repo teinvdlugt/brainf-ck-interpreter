@@ -16,5 +16,5 @@
     <string name="no_delay">No delay</string>
     <string name="delay_ms_format" formatted="false">%d ms</string>
     <string name="error">Error</string>
-    <string name="error_maximum_cells">Error: there is a maximum of 100 memory cells</string>
+    <string name="error_maximum_cells" formatted="false">Error: there is a maximum of %d memory cells</string>
 </resources>

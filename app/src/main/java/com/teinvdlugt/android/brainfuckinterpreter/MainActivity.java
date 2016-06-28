@@ -91,14 +91,14 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
 
     private boolean running = false;
     private int delay = 0;
-    private byte[] bytes = new byte[100];
+    private byte[] bytes = new byte[CellsLayout.MAX_CELL_AMOUNT];
     private int ptr = 0;
     private int i = 0;
     private String code;
     private byte input = -1;
 
     private void run() {
-        bytes = new byte[100];
+        bytes = new byte[CellsLayout.MAX_CELL_AMOUNT];
         ptr = 0;
         i = 0;
         input = -1;
@@ -130,12 +130,12 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             ptr++;
                             i++;
 
-                            if (ptr >= 100) {
+                            if (ptr >= CellsLayout.MAX_CELL_AMOUNT) {
                                 outputTV.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
-                                        outputTV.setText(R.string.error_maximum_cells);
+                                        outputTV.setText(getString(R.string.error_maximum_cells, CellsLayout.MAX_CELL_AMOUNT));
                                     }
                                 });
                                 break;

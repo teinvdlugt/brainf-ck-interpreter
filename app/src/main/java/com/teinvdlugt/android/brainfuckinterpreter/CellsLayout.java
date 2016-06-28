@@ -10,6 +10,7 @@ import java.util.List;
 
 
 public class CellsLayout extends LinearLayout {
+    public static final int MAX_CELL_AMOUNT = 200;
 
     private List<Cell> cells = new ArrayList<>();
     private int pointer = 0;
@@ -25,7 +26,7 @@ public class CellsLayout extends LinearLayout {
     }
 
     private void init() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 200; i++) {
             Cell tv = new Cell(getContext());
             tv.setText("0");
             addView(tv);
