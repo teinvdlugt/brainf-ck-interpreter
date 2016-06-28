@@ -7,11 +7,13 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener {
@@ -175,28 +177,14 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             bytes[ptr]++;
                             i++;
 
-                            final int index = ptr;
-                            final byte text = bytes[ptr];
-                            cellsLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cellsLayout.setText(index, text);
-                                }
-                            });
+                            setCellText(ptr, bytes[ptr]);
                         } else if (token == '-') {
                             bytes[ptr]--;
                             i++;
 
-                            final int index = ptr;
-                            final byte text = bytes[ptr];
-                            cellsLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cellsLayout.setText(index, text);
-                                }
-                            });
+                            setCellText(ptr, bytes[ptr]);
                         } else if (token == ',') {
-                            if (input == -1) {
+                            if (input == -1 || input == 255 /* Weird bytes say that they're 255 */) {
                                 cellsLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -207,16 +195,8 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             } else {
                                 bytes[ptr] = input;
                                 i++;
+                                setCellText(ptr, input);
                                 input = -1;
-
-                                final int index = ptr;
-                                final byte text = input;
-                                cellsLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        cellsLayout.setText(index, text);
-                                    }
-                                });
                             }
                         } else if (token == '.') {
                             final String text = String.valueOf((char) bytes[ptr]);
@@ -282,6 +262,15 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
         }).start();
     }
 
+    private void setCellText(final int cellIndex, final byte text) {
+        cellsLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                cellsLayout.setText(cellIndex, text);
+            }
+        });
+    }
+
     private int matchingClosingBracket(int i) {
         int openingBrackets = 0;
         while (true) {
@@ -309,20 +298,26 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     }
 
     private void askForInput() {
-        final EditText et = new EditText(this);
+        LinearLayout layout = new LinearLayout(this);
+        int _16dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+        layout.setPadding(_16dp, _16dp, _16dp, _16dp);
+        final EditText inputET = new EditText(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.addView(inputET, params);
+
         new AlertDialog.Builder(this)
                 .setTitle(R.string.input_dialog_title)
-                .setView(et)
+                .setView(layout)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (et.length() == 0) {
+                        if (inputET.length() == 0)
                             input = 0;
-                            interpret();
-                        } else {
-                            input = (byte) et.getText().toString().charAt(0);
-                            interpret();
-                        }
+                        else
+                            input = (byte) inputET.getText().toString().charAt(0);
+                        running = true;
+                        interpret();
                     }
                 }).create().show();
     }

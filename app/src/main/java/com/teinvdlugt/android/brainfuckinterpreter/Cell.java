@@ -11,8 +11,6 @@ import android.widget.TextView;
 public class Cell extends TextView {
 
     private Paint linePaint;
-    private int pointedColor;
-    private boolean pointed;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -21,7 +19,6 @@ public class Cell extends TextView {
     }
 
     public void setPointed(boolean pointed) {
-        this.pointed = pointed;
         if (pointed) {
             setBackgroundResource(R.color.pointerCell);
         } else {
