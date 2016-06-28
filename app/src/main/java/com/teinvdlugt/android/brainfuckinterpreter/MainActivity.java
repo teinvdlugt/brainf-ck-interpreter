@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                     stop();
                 } else {
                     run();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "execute_code_button");
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 }
                 return true;
             case R.id.delay:
