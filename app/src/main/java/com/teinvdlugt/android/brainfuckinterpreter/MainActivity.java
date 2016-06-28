@@ -16,8 +16,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener {
     public static final String DELAY_PREFERENCE = "delay";
+
+    private FirebaseAnalytics firebaseAnalytics;
 
     private EditText et;
     private TextView outputTV;
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
 
         delay = PreferenceManager.getDefaultSharedPreferences(this)
@@ -42,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // TODO: 28-6-2016 Make "Hello, World!" menu button that puts example code in the text box
+
         getMenuInflater().inflate(R.menu.main, menu);
 
         if (running) {
