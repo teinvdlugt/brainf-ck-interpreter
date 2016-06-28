@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     private void askForInput() {
         final EditText et = new EditText(this);
         new AlertDialog.Builder(this)
-                .setTitle("Provide input")
+                .setTitle(R.string.input_dialog_title)
                 .setView(et)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override

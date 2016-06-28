@@ -17,4 +17,5 @@
     <string name="delay_ms_format" formatted="false">%d ms</string>
     <string name="error">Error</string>
     <string name="error_maximum_cells" formatted="false">Error: there is a maximum of %d memory cells</string>
+    <string name="input_dialog_title">Provide input</string>
 </resources>

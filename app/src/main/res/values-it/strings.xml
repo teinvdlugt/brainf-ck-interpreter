@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Brainf*ck Interpreter</string>
+    <string name="backspace_xs">Cancella</string>
+    <string name="edit_text_hint">Inizia a programmare</string>
+    <string name="run">Avvia</string>
+    <string name="delay">Ritardo</string>
+    <string name="no_delay">Nessun ritardo</string>
+    <string name="delay_ms_format">%d ms</string>
+    <string name="ok">Fatto</string>
+    <string name="error">Errore</string>
+    <string name="error_maximum_cells">Errore: limite massimo di %d celle di memoria</string>
+    <string name="input_dialog_title">Fornisci input</string>
+</resources>
