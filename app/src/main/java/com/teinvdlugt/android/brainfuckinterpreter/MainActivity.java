@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
             public void run() {
                 while (i < code.length() && running) {
                     char token = code.charAt(i);
+                    boolean wait = true;
                     try {
                         if (token == '>') {
                             ptr++;
@@ -240,6 +241,10 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             } else {
                                 i = matchingOpeningBracket(i) + 1;
                             }
+                        } else {
+                            // Invalid character: skip
+                            i++;
+                            wait = false;
                         }
                     } catch (StringIndexOutOfBoundsException e) {
                         // Exception can be thrown when invoking matchingClosingBracket()
@@ -255,10 +260,12 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                         break;
                     }
 
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if (wait) {
+                        try {
+                            Thread.sleep(delay);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
