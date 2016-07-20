@@ -10,7 +10,8 @@ import java.util.List;
 
 
 public class CellsLayout extends LinearLayout {
-    public static final int MAX_CELL_AMOUNT = 200;
+    public static final int MAX_CELL_AMOUNT = 30000;
+    public static final int INITIAL_CELL_AMOUNT = 100;
 
     private List<Cell> cells = new ArrayList<>();
     private int pointer = 0;
@@ -20,13 +21,22 @@ public class CellsLayout extends LinearLayout {
     }
 
     public void movePointer(int which) {
-        cells.get(pointer).setPointed(false);
+        if (which >= cells.size()) {
+            for (int i = 0; i < which - cells.size() + 1; i++) {
+                Cell tv = new Cell(getContext());
+                tv.setText("0");
+                addView(tv);
+                cells.add(tv);
+            }
+        }
+        if (pointer < cells.size())
+            cells.get(pointer).setPointed(false);
         pointer = which;
         cells.get(which).setPointed(true);
     }
 
     private void init() {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < INITIAL_CELL_AMOUNT; i++) {
             Cell tv = new Cell(getContext());
             tv.setText("0");
             addView(tv);
@@ -35,6 +45,10 @@ public class CellsLayout extends LinearLayout {
     }
 
     public void clearAllBytes() {
+        if (cells.size() > INITIAL_CELL_AMOUNT) {
+            removeViews(INITIAL_CELL_AMOUNT, cells.size() - INITIAL_CELL_AMOUNT);
+            cells.removeAll(cells.subList(INITIAL_CELL_AMOUNT, cells.size() - 1));
+        }
         for (TextView tv : cells) {
             tv.setText("0");
         }
