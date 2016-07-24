@@ -22,4 +22,14 @@
     <string name="hello_world_description">This will load example code printing \"Hello World!\" to the screen and will erase the code currently in the text field. Proceed?</string>
     <string name="hello_world_positive_button">Continue</string>
     <string name="cancel">Cancel</string>
+    <string name="menu_output">Output</string>
+    <string name="output_in">Output in…</string>
+
+    <string-array name="output_modes">
+        <item>ASCII</item>
+        <item>Decimal</item>
+        <item>Binary</item>
+        <item>Octal</item>
+        <item>Hexadecimal</item>
+    </string-array>
 </resources>

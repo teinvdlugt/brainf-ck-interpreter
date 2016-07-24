@@ -21,6 +21,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener {
     public static final String DELAY_PREFERENCE = "delay";
     private static final String HELLO_WORLD_CODE = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
+    private static final int OUTPUT_MODE_ASCII = 0;
+    private static final int OUTPUT_MODE_DEC = 1;
+    private static final int OUTPUT_MODE_BIN = 2;
+    private static final int OUTPUT_MODE_OCT = 3;
+    private static final int OUTPUT_MODE_HEX = 4;
+    private static final String OUTPUT_MODE_PREFERENCE = "output_mode";
+    private int current_output_mode = 0;
 
     private FirebaseAnalytics firebaseAnalytics;
 
@@ -36,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
 
         delay = PreferenceManager.getDefaultSharedPreferences(this)
                 .getInt(DELAY_PREFERENCE, 0);
+
+        current_output_mode = PreferenceManager.getDefaultSharedPreferences(this)
+                .getInt(OUTPUT_MODE_PREFERENCE, 0);
+        if (current_output_mode < 0 || current_output_mode > 4) current_output_mode = 0;
 
         BackspaceButton backspace = (BackspaceButton) findViewById(R.id.backspace_key);
         backspace.setBackspaceListener(this);
@@ -112,6 +123,20 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 } else {
                     loadHelloWorldExample();
                 }
+                return true;
+            case R.id.menu_output:
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.output_in)
+                        .setSingleChoiceItems(R.array.output_modes, current_output_mode, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                current_output_mode = which;
+                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit()
+                                        .putInt(OUTPUT_MODE_PREFERENCE, current_output_mode).apply();
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+                return true;
             default:
                 return false;
         }
@@ -215,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
 
                             setCellText(ptr, bytes[ptr]);
                         } else if (token == ',') {
-                            if (input == -1 || input == 255 /* Weird bytes say that they're 255 */) {
+                            if (input == -1 || input == 255 /* Weird bytes sometimes say that they're 255 */) {
                                 cellsLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -230,15 +255,36 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                                 input = -1;
                             }
                         } else if (token == '.') {
-                            final String text = String.valueOf((char) bytes[ptr]);
-                            outputTV.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    outputTV.setVisibility(View.VISIBLE);
-                                    outputTV.append(text);
-                                }
-                            });
-
+                            final String text;
+                            switch (current_output_mode) {
+                                case OUTPUT_MODE_ASCII:
+                                    text = String.valueOf((char) bytes[ptr]);
+                                    break;
+                                case OUTPUT_MODE_DEC:
+                                    text = Integer.toString(bytes[ptr]);
+                                    break;
+                                case OUTPUT_MODE_BIN:
+                                    text = Integer.toBinaryString(bytes[ptr]);
+                                    break;
+                                case OUTPUT_MODE_OCT:
+                                    text = Integer.toOctalString(bytes[ptr]);
+                                    break;
+                                case OUTPUT_MODE_HEX:
+                                    text = Integer.toHexString(bytes[ptr]);
+                                    break;
+                                default:
+                                    text = null;
+                            }
+                            if (text != null)
+                                outputTV.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        outputTV.setVisibility(View.VISIBLE);
+                                        if (outputTV.length() != 0 && current_output_mode != OUTPUT_MODE_ASCII)
+                                            outputTV.append(" ");
+                                        outputTV.append(text);
+                                    }
+                                });
                             i++;
                         } else if (token == '[') {
                             if (bytes[ptr] == 0) {

@@ -18,4 +18,9 @@
         android:orderInCategory="102"
         android:title="@string/hello_world_example"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_output"
+        android:orderInCategory="103"
+        android:title="@string/menu_output"
+        app:showAsAction="never" />
 </menu>
