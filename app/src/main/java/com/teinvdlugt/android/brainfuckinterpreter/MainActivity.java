@@ -20,6 +20,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener {
     public static final String DELAY_PREFERENCE = "delay";
+    private static final String HELLO_WORLD_CODE = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
 
     private FirebaseAnalytics firebaseAnalytics;
 
@@ -96,9 +97,29 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             }
                         }).create().show();
                 return true;
+            case R.id.menu_hello_world:
+                if (et.length() != 0) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.hello_world_example)
+                            .setMessage(R.string.hello_world_description)
+                            .setPositiveButton(R.string.hello_world_positive_button, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    loadHelloWorldExample();
+                                }
+                            }).setNegativeButton(R.string.cancel, null)
+                            .create().show();
+                } else {
+                    loadHelloWorldExample();
+                }
             default:
                 return false;
         }
+    }
+
+    private void loadHelloWorldExample() {
+        stop();
+        et.setText(HELLO_WORLD_CODE);
     }
 
     private boolean running = false;

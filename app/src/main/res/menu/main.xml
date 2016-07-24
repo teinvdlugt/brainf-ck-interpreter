@@ -13,4 +13,9 @@
         android:orderInCategory="101"
         android:title="@string/delay"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_hello_world"
+        android:orderInCategory="102"
+        android:title="@string/hello_world_example"
+        app:showAsAction="never" />
 </menu>

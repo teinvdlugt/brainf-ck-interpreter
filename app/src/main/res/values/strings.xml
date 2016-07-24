@@ -18,4 +18,8 @@
     <string name="error">Error</string>
     <string name="error_maximum_cells" formatted="false">Error: there is a maximum of %d memory cells</string>
     <string name="input_dialog_title">Provide input</string>
+    <string name="hello_world_example">Hello World example</string>
+    <string name="hello_world_description">This will load example code printing \"Hello World!\" to the screen and will erase the code currently in the text field. Proceed?</string>
+    <string name="hello_world_positive_button">Continue</string>
+    <string name="cancel">Cancel</string>
 </resources>
