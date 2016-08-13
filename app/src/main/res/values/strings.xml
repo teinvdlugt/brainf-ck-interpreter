@@ -13,7 +13,7 @@
     <string name="run">Run</string>
     <string name="ok">OK</string>
     <string name="delay">Delay</string>
-    <string name="no_delay">No delay</string>
+    <string name="no_delay">No delay (not recommended for long-running programs)</string>
     <string name="delay_ms_format" formatted="false">%d ms</string>
     <string name="error">Error</string>
     <string name="error_maximum_cells" formatted="false">Error: there is a maximum of %d memory cells</string>

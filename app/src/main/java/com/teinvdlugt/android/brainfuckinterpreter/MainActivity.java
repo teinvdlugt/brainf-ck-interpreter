@@ -85,15 +85,16 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 return true;
             case R.id.delay:
                 final String[] entries = {getString(R.string.no_delay),
+                        getString(R.string.delay_ms_format, 2),
                         getString(R.string.delay_ms_format, 10),
                         getString(R.string.delay_ms_format, 50),
                         getString(R.string.delay_ms_format, 100),
                         getString(R.string.delay_ms_format, 500),
                         getString(R.string.delay_ms_format, 1000)};
-                final int[] values = {0, 10, 50, 100, 500, 1000};
-                final int checked = PreferenceManager.getDefaultSharedPreferences(this).getInt(DELAY_PREFERENCE, 0);
-                final int checkedIndex = checked == 0 ? 0 : checked == 10 ? 1 : checked == 50 ? 2 :
-                        checked == 100 ? 3 : checked == 500 ? 4 : checked == 1000 ? 5 : -1;
+                final int[] values = {0, 2, 10, 50, 100, 500, 1000};
+                final int checked = PreferenceManager.getDefaultSharedPreferences(this).getInt(DELAY_PREFERENCE, 2);
+                final int checkedIndex = checked == 0 ? 0 : checked == 2 ? 1 : checked == 10 ? 2 : checked == 50 ? 3 :
+                        checked == 100 ? 4 : checked == 500 ? 5 : checked == 1000 ? 6 : -1;
 
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.delay)
