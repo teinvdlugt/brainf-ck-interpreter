@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     private EditText et;
     private TextView outputTV;
     private CellsLayout cellsLayout;
+    private Button clearOutputButton; // Only on x-large devices
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +55,13 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
 
         et = (EditText) findViewById(R.id.editText);
         outputTV = (TextView) findViewById(R.id.output_textView);
+        clearOutputButton = (Button) findViewById(R.id.clearOutputButton);
         cellsLayout = (CellsLayout) findViewById(R.id.cellsLayout);
         disableSoftKeyboard(et, true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // TODO: 28-6-2016 Make "Hello, World!" menu button that puts example code in the text box
-
         getMenuInflater().inflate(R.menu.main, menu);
 
         if (running) {
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 } else {
                     run();
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "execute_code_button");
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "execute_code_button"); // TODO change to ITEM_NAME?
                     firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 }
                 return true;
@@ -138,9 +139,17 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             }
                         }).create().show();
                 return true;
+            case R.id.menu_clear_output:
+                onClickClearOutput(null);
             default:
                 return false;
         }
+    }
+
+    public void onClickClearOutput(View view) {
+        outputTV.setText("");
+        outputTV.setVisibility(View.GONE);
+        if (clearOutputButton != null) clearOutputButton.setVisibility(View.GONE);
     }
 
     private void loadHelloWorldExample() {
@@ -195,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
+                                        if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
                                         outputTV.setText(getString(R.string.error_maximum_cells, CellsLayout.MAX_CELL_AMOUNT));
                                     }
                                 });
@@ -217,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
+                                        if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
                                         outputTV.setText(R.string.error);
                                     }
                                 });
@@ -281,6 +292,8 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
+                                        if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
+                                        // Insert space if not in ASCII-output mode
                                         if (outputTV.length() != 0 && current_output_mode != OUTPUT_MODE_ASCII)
                                             outputTV.append(" ");
                                         outputTV.append(text);
@@ -312,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             @Override
                             public void run() {
                                 outputTV.setVisibility(View.VISIBLE);
+                                if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
                                 outputTV.setText(R.string.error);
                             }
                         });

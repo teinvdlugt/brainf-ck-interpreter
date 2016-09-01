@@ -24,6 +24,8 @@
     <string name="cancel">Cancel</string>
     <string name="menu_output">Output</string>
     <string name="output_in">Output in…</string>
+    <string name="clear_output">Clear output</string>
+    <string name="clear">Clear</string>
 
     <string-array name="output_modes">
         <item>ASCII</item>
