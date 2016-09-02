@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -34,8 +36,16 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
 
     private EditText et;
     private TextView outputTV;
-    private CellsLayout cellsLayout;
+    private CellsAdapter adapter;
     private Button clearOutputButton; // Only on x-large devices
+    private RecyclerView cellsRecyclerView;
+
+    private boolean running = false;
+    private int delay = 0;
+    private int ptr = 0; // TODO eliminate variable?
+    private int i = 0;
+    private String code;
+    private byte input = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +53,9 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
 
+        // Initialize saved variables
         delay = PreferenceManager.getDefaultSharedPreferences(this)
                 .getInt(DELAY_PREFERENCE, 0);
-
         current_output_mode = PreferenceManager.getDefaultSharedPreferences(this)
                 .getInt(OUTPUT_MODE_PREFERENCE, 0);
         if (current_output_mode < 0 || current_output_mode > 4) current_output_mode = 0;
@@ -53,10 +63,16 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
         BackspaceButton backspace = (BackspaceButton) findViewById(R.id.backspace_key);
         backspace.setBackspaceListener(this);
 
+        cellsRecyclerView = (RecyclerView) findViewById(R.id.cellRecyclerView);
+        cellsRecyclerView.setItemAnimator(null);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        cellsRecyclerView.setLayoutManager(layoutManager);
+        adapter = new CellsAdapter(this, layoutManager);
+        cellsRecyclerView.setAdapter(adapter);
+
         et = (EditText) findViewById(R.id.editText);
         outputTV = (TextView) findViewById(R.id.output_textView);
         clearOutputButton = (Button) findViewById(R.id.clearOutputButton);
-        cellsLayout = (CellsLayout) findViewById(R.id.cellsLayout);
         disableSoftKeyboard(et, true);
     }
 
@@ -157,24 +173,15 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
         et.setText(HELLO_WORLD_CODE);
     }
 
-    private boolean running = false;
-    private int delay = 0;
-    private byte[] bytes = new byte[CellsLayout.MAX_CELL_AMOUNT];
-    private int ptr = 0;
-    private int i = 0;
-    private String code;
-    private byte input = -1;
-
     private void run() {
-        bytes = new byte[CellsLayout.MAX_CELL_AMOUNT];
+        adapter.clearMemory();
         ptr = 0;
         i = 0;
         input = -1;
         code = et.getText().toString();
-        cellsLayout.clearAllBytes();
         outputTV.setText("");
         outputTV.setVisibility(View.GONE);
-        cellsLayout.movePointer(0);
+        adapter.movePointer(0);
 
         running = true;
         invalidateOptionsMenu();
@@ -204,56 +211,42 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
-                                        if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
+                                        if (clearOutputButton != null)
+                                            clearOutputButton.setVisibility(View.VISIBLE);
                                         outputTV.setText(getString(R.string.error_maximum_cells, CellsLayout.MAX_CELL_AMOUNT));
                                     }
                                 });
                                 break;
                             }
 
-                            final int movedPointer = ptr;
-                            cellsLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cellsLayout.movePointer(movedPointer);
-                                }
-                            });
+                            adapter.movePointer(ptr);
                         } else if (token == '<') {
                             ptr--;
                             i++;
 
                             if (ptr < 0) {
-                                outputTV.post(new Runnable() {
+                                runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
-                                        if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
+                                        if (clearOutputButton != null)
+                                            clearOutputButton.setVisibility(View.VISIBLE);
                                         outputTV.setText(R.string.error);
                                     }
                                 });
                                 break;
                             }
 
-                            final int movedPointer = ptr;
-                            cellsLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cellsLayout.movePointer(movedPointer);
-                                }
-                            });
+                            adapter.movePointer(ptr);
                         } else if (token == '+') {
-                            bytes[ptr]++;
+                            adapter.incrementPointedCellValue();
                             i++;
-
-                            setCellText(ptr, bytes[ptr]);
                         } else if (token == '-') {
-                            bytes[ptr]--;
+                            adapter.decrementPointedCellValue();
                             i++;
-
-                            setCellText(ptr, bytes[ptr]);
                         } else if (token == ',') {
                             if (input == -1 || input == 255 /* Weird bytes sometimes say that they're 255 */) {
-                                cellsLayout.post(new Runnable() {
+                                runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         askForInput();
@@ -261,53 +254,56 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                                 });
                                 break;
                             } else {
-                                bytes[ptr] = input;
+                                adapter.setPointedCellValue(input);
                                 i++;
-                                setCellText(ptr, input);
                                 input = -1;
                             }
                         } else if (token == '.') {
                             final String text;
+                            byte cellValue = adapter.getPointedCellValue();
                             switch (current_output_mode) {
                                 case OUTPUT_MODE_ASCII:
-                                    text = String.valueOf((char) bytes[ptr]);
+                                    text = String.valueOf((char) cellValue);
                                     break;
                                 case OUTPUT_MODE_DEC:
-                                    text = Integer.toString(bytes[ptr]);
+                                    text = Integer.toString(cellValue);
                                     break;
                                 case OUTPUT_MODE_BIN:
-                                    text = Integer.toBinaryString(bytes[ptr]);
+                                    text = Integer.toBinaryString(cellValue);
                                     break;
                                 case OUTPUT_MODE_OCT:
-                                    text = Integer.toOctalString(bytes[ptr]);
+                                    text = Integer.toOctalString(cellValue);
                                     break;
                                 case OUTPUT_MODE_HEX:
-                                    text = Integer.toHexString(bytes[ptr]);
+                                    text = Integer.toHexString(cellValue);
                                     break;
                                 default:
                                     text = null;
                             }
-                            if (text != null)
+                            if (text != null) {
                                 outputTV.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         outputTV.setVisibility(View.VISIBLE);
-                                        if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
+                                        if (clearOutputButton != null)
+                                            clearOutputButton.setVisibility(View.VISIBLE);
                                         // Insert space if not in ASCII-output mode
                                         if (outputTV.length() != 0 && current_output_mode != OUTPUT_MODE_ASCII)
                                             outputTV.append(" ");
                                         outputTV.append(text);
                                     }
                                 });
+                            }
+
                             i++;
                         } else if (token == '[') {
-                            if (bytes[ptr] == 0) {
+                            if (adapter.getPointedCellValue() == 0) {
                                 i = matchingClosingBracket(i) + 1;
                             } else {
                                 i++;
                             }
                         } else if (token == ']') {
-                            if (bytes[ptr] == 0) {
+                            if (adapter.getPointedCellValue() == 0) {
                                 i++;
                             } else {
                                 i = matchingOpeningBracket(i) + 1;
@@ -325,7 +321,8 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                             @Override
                             public void run() {
                                 outputTV.setVisibility(View.VISIBLE);
-                                if (clearOutputButton != null) clearOutputButton.setVisibility(View.VISIBLE);
+                                if (clearOutputButton != null)
+                                    clearOutputButton.setVisibility(View.VISIBLE);
                                 outputTV.setText(R.string.error);
                             }
                         });
@@ -342,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 }
 
                 if (running) {
-                    cellsLayout.post(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             running = false;
@@ -352,15 +349,6 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 }
             }
         }).start();
-    }
-
-    private void setCellText(final int cellIndex, final byte text) {
-        cellsLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                cellsLayout.setText(cellIndex, text);
-            }
-        });
     }
 
     private int matchingClosingBracket(int i) {
@@ -390,6 +378,8 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     }
 
     private void askForInput() {
+        // TODO: 2-9-2016 Make a spinner to select whether ASCII or decimal input
+
         LinearLayout layout = new LinearLayout(this);
         int _16dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
         layout.setPadding(_16dp, _16dp, _16dp, _16dp);

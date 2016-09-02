@@ -8,17 +8,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.teinvdlugt.android.brainfuckinterpreter.MainActivity">
 
-    <HorizontalScrollView
-        android:id="@+id/cells"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cellRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-
-        <com.teinvdlugt.android.brainfuckinterpreter.CellsLayout
-            android:id="@+id/cellsLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </HorizontalScrollView>
+        android:layout_height="wrap_content" />
 
     <ScrollView
         android:layout_width="match_parent"
