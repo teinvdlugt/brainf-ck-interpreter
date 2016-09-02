@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public class CellsLayout extends LinearLayout {
-    public static final int MAX_CELL_AMOUNT = 30000;
+    public static final int MAX_CELL_AMOUNT = 30000; // TODO Too much views/memory? Try RecyclerView
     public static final int INITIAL_CELL_AMOUNT = 100;
 
     private List<Cell> cells = new ArrayList<>();

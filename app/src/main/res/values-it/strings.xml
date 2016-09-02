@@ -25,4 +25,8 @@
         <item>Ottale</item>
         <item>Esadecimale</item>
     </string-array>
+    <string name="clear">Cancella</string>
+    <string name="clear_output">Cancella output</string>
+    <string name="bracket_close" translatable="false"></string>
+    <string name="bracket_open" translatable="false"></string>
 </resources>
