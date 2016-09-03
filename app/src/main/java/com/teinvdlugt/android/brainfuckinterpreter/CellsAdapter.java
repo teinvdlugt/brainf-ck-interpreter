@@ -25,23 +25,37 @@ public class CellsAdapter extends RecyclerView.Adapter<CellsAdapter.ViewHolder> 
         this.data = new byte[CellsLayout.MAX_CELL_AMOUNT];
     }
 
-    /*public byte[] getData() {
-        return data;
-    }*/
-
     public void incrementPointedCellValue() {
         data[pointedCellPosition]++;
-        context.runOnUiThread(notifyItemChangedRunnable);
+        final int pointedCellPositionFinal = pointedCellPosition;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(pointedCellPositionFinal);
+            }
+        });
     }
 
     public void decrementPointedCellValue() {
         data[pointedCellPosition]--;
-        context.runOnUiThread(notifyItemChangedRunnable);
+        final int pointedCellPositionFinal = pointedCellPosition;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(pointedCellPositionFinal);
+            }
+        });
     }
 
     public void setPointedCellValue(byte value) {
         data[pointedCellPosition] = value;
-        context.runOnUiThread(notifyItemChangedRunnable);
+        final int pointedCellPositionFinal = pointedCellPosition;
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(pointedCellPositionFinal);
+            }
+        });
     }
 
     public byte getPointedCellValue() {
