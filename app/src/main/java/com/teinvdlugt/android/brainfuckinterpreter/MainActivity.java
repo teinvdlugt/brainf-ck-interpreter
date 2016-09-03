@@ -10,14 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -183,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
         code = et.getText().toString();
         outputTV.setText("");
         outputTV.setVisibility(View.GONE);
+        if (clearOutputButton != null) clearOutputButton.setVisibility(View.GONE);
         adapter.movePointer(0);
 
         running = true;
@@ -382,29 +381,6 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     private void askForInput() {
         DialogFragment dialog = new InputDialogFragment();
         dialog.show(getSupportFragmentManager(), "InputDialogFragment");
-/*
-        LinearLayout layout = new LinearLayout(this);
-        int _16dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
-        layout.setPadding(_16dp, _16dp, _16dp, _16dp);
-        final EditText inputET = new EditText(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layout.addView(inputET, params);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.input_dialog_title)
-                .setView(layout)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (inputET.length() == 0)
-                            input = 0;
-                        else
-                            input = (byte) inputET.getText().toString().charAt(0);
-                        running = true;
-                        interpret();
-                    }
-                }).create().show();*/
     }
 
     @Override
