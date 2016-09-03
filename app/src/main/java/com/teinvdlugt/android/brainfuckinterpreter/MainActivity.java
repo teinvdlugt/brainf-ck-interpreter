@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +22,8 @@ import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener {
+public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener,
+        InputDialogFragment.InputGivenListener {
     public static final String DELAY_PREFERENCE = "delay";
     private static final String HELLO_WORLD_CODE = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
     private static final int OUTPUT_MODE_ASCII = 0;
@@ -378,8 +380,9 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     }
 
     private void askForInput() {
-        // TODO: 2-9-2016 Make a spinner to select whether ASCII or decimal input
-
+        DialogFragment dialog = new InputDialogFragment();
+        dialog.show(getSupportFragmentManager(), "InputDialogFragment");
+/*
         LinearLayout layout = new LinearLayout(this);
         int _16dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
         layout.setPadding(_16dp, _16dp, _16dp, _16dp);
@@ -401,7 +404,14 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                         running = true;
                         interpret();
                     }
-                }).create().show();
+                }).create().show();*/
+    }
+
+    @Override
+    public void onInputGiven(byte input) {
+        this.input = input;
+        running = true;
+        interpret();
     }
 
     @Override

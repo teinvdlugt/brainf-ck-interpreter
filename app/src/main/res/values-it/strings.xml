@@ -17,6 +17,8 @@
     <string name="output_in">Risultato in…</string>
     <string name="hello_world_description">Questo caricherà il codice di esempio che scrive \"Hello World!\" sullo schermo e cancellerà il codice presente nel campo di testo. Continuare?</string>
     <string name="hello_world_example">Esempio Hello World</string>
+    <string name="clear">Cancella</string>
+    <string name="clear_output">Cancella output</string>
 
     <string-array name="output_modes">
         <item>ASCII</item>
@@ -25,8 +27,7 @@
         <item>Ottale</item>
         <item>Esadecimale</item>
     </string-array>
-    <string name="clear">Cancella</string>
-    <string name="clear_output">Cancella output</string>
-    <string name="bracket_close" translatable="false"></string>
-    <string name="bracket_open" translatable="false"></string>
+
+    <string name="ascii">ASCII</string>
+    <string name="decimal">Decimale</string>
 </resources>

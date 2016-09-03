@@ -34,4 +34,7 @@
         <item>Octal</item>
         <item>Hexadecimal</item>
     </string-array>
+
+    <string name="ascii">ASCII</string>
+    <string name="decimal">Decimal</string>
 </resources>
