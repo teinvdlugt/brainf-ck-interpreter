@@ -1,7 +1,7 @@
 package com.teinvdlugt.android.brainfuckinterpreter;
 
 import android.content.Context;
-import android.support.v4.view.GestureDetectorCompat;
+import androidx.core.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
