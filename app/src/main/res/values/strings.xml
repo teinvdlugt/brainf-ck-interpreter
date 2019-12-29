@@ -37,4 +37,5 @@
 
     <string name="ascii">ASCII</string>
     <string name="decimal">Decimal</string>
+    <string name="enter_key">Enter</string>
 </resources>

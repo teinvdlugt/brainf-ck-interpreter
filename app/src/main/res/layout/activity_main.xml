@@ -47,8 +47,8 @@
         </RelativeLayout>
     </ScrollView>
 
-    <include
-        layout="@layout/keyboard"
+    <com.teinvdlugt.android.brainfuckinterpreter.Keyboard
+        android:id="@+id/keyboard"
         android:layout_width="280dp"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal" />

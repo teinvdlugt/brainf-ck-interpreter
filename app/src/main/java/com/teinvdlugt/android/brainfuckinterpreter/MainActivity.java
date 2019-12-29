@@ -20,8 +20,7 @@ import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-public class MainActivity extends AppCompatActivity implements BackspaceButton.BackspaceListener,
-        InputDialogFragment.InputGivenListener {
+public class MainActivity extends AppCompatActivity implements InputDialogFragment.InputGivenListener {
     public static final String DELAY_PREFERENCE = "delay";
     private static final String HELLO_WORLD_CODE = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
     private static final int OUTPUT_MODE_ASCII = 0;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
     private TextView outputTV;
     private CellsAdapter adapter;
     private Button clearOutputButton; // Only on x-large devices
-    private RecyclerView cellsRecyclerView;
 
     private boolean running = false;
     private int delay = 0;
@@ -60,20 +58,18 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 .getInt(OUTPUT_MODE_PREFERENCE, 0);
         if (current_output_mode < 0 || current_output_mode > 4) current_output_mode = 0;
 
-        BackspaceButton backspace = (BackspaceButton) findViewById(R.id.backspace_key);
-        backspace.setBackspaceListener(this);
-
-        cellsRecyclerView = (RecyclerView) findViewById(R.id.cellRecyclerView);
+        RecyclerView cellsRecyclerView = findViewById(R.id.cellRecyclerView);
         cellsRecyclerView.setItemAnimator(null);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         cellsRecyclerView.setLayoutManager(layoutManager);
         adapter = new CellsAdapter(this, layoutManager);
         cellsRecyclerView.setAdapter(adapter);
 
-        et = (EditText) findViewById(R.id.editText);
-        outputTV = (TextView) findViewById(R.id.output_textView);
-        clearOutputButton = (Button) findViewById(R.id.clearOutputButton);
+        et = findViewById(R.id.editText);
+        outputTV = findViewById(R.id.output_textView);
+        clearOutputButton = findViewById(R.id.clearOutputButton);
         disableSoftKeyboard(et, true);
+        ((Keyboard) findViewById(R.id.keyboard)).setEditText(et);
     }
 
     @Override
@@ -396,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
         stop();
     }
 
-    public void disableSoftKeyboard(final EditText et, boolean prevent) {
+    public void disableSoftKeyboard(final EditText et, boolean prevent) { // TODO renew
         if (prevent) {
             if (Build.VERSION.SDK_INT >= 21) {
                 et.setShowSoftInputOnFocus(false);
@@ -425,48 +421,5 @@ public class MainActivity extends AppCompatActivity implements BackspaceButton.B
                 });
             }
         }
-    }
-
-    public void onClickIncrement(View view) {
-        et.getText().insert(et.getSelectionEnd(), "+");
-    }
-
-    public void onClickDecrement(View view) {
-        et.getText().insert(et.getSelectionEnd(), "-");
-    }
-
-    public void onClickBracketOpen(View view) {
-        et.getText().insert(et.getSelectionEnd(), "[");
-    }
-
-    public void onClickBracketClose(View view) {
-        et.getText().insert(et.getSelectionEnd(), "]");
-    }
-
-    public void onClickInput(View view) {
-        et.getText().insert(et.getSelectionEnd(), ",");
-    }
-
-    public void onClickOutput(View view) {
-        et.getText().insert(et.getSelectionEnd(), ".");
-    }
-
-    public void onClickPointerLeft(View view) {
-        et.getText().insert(et.getSelectionEnd(), "<");
-    }
-
-    public void onClickPointerRight(View view) {
-        et.getText().insert(et.getSelectionEnd(), ">");
-    }
-
-    @Override
-    public void onBackspaceInvoked() {
-        try {
-            if (et.getSelectionStart() == et.getSelectionEnd()) {
-                et.getText().delete(et.getSelectionStart() - 1, et.getSelectionEnd());
-            } else {
-                et.getText().delete(et.getSelectionStart(), et.getSelectionEnd());
-            }
-        } catch (IndexOutOfBoundsException ignored) {/* ignored */}
     }
 }
