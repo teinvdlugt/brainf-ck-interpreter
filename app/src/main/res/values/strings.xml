@@ -37,5 +37,6 @@
 
     <string name="ascii">ASCII</string>
     <string name="decimal">Decimal</string>
-    <string name="enter_key">Enter</string>
+    <string name="return_xs">Return</string>
+    <string name="space_xs">Space</string>
 </resources>

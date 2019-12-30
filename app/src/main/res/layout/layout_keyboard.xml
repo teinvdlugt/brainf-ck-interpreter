@@ -94,14 +94,14 @@
         app:layout_constraintStart_toEndOf="@id/button21"
         app:layout_constraintTop_toBottomOf="@id/button12" />
 
-    <Button
+    <ImageButton
+        android:contentDescription="@string/backspace_xs"
         android:layout_margin="4dp"
         android:id="@+id/button23"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackground"
-        android:text="Back"
-        android:textColor="?android:textColorPrimary"
+        android:src="@drawable/ic_keyboard_backspace_black_24dp"
         app:layout_constraintBottom_toTopOf="@+id/button33"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="2"
@@ -121,7 +121,6 @@
         android:textSize="26sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button32"
-        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button21" />
 
@@ -137,22 +136,32 @@
         android:textSize="26sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button33"
-        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/button31"
         app:layout_constraintTop_toBottomOf="@id/button22" />
 
-    <Button
+    <ImageButton
+        android:contentDescription="@string/space_xs"
         android:layout_margin="4dp"
         android:id="@+id/button33"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="?attr/selectableItemBackground"
-        android:text="@string/enter_key"
-        android:textColor="?android:textColorPrimary"
+        android:src="@drawable/ic_keyboard_space_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button34"
+        app:layout_constraintStart_toEndOf="@id/button32"
+        app:layout_constraintTop_toBottomOf="@id/button23"/>
+
+    <ImageButton
+        android:contentDescription="@string/return_xs"
+        android:layout_margin="4dp"
+        android:id="@+id/button34"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_keyboard_return_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintStart_toEndOf="@id/button32"
-        app:layout_constraintTop_toBottomOf="@id/button23"
-        app:layout_constraintVertical_chainStyle="spread_inside" />
+        app:layout_constraintStart_toEndOf="@id/button33"
+        app:layout_constraintTop_toBottomOf="@id/button23" />
 </androidx.constraintlayout.widget.ConstraintLayout>

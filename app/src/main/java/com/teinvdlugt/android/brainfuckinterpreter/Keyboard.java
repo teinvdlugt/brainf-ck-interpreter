@@ -29,7 +29,7 @@ public class Keyboard extends FrameLayout implements View.OnLongClickListener {
         addView(view, lp);
 
         // Backspace long-click (See also this.onLongClick)
-        Button backspace = findViewById(R.id.button23);
+        View backspace = findViewById(R.id.button23);
         backspace.setOnLongClickListener(this);
         backspace.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -91,6 +91,12 @@ public class Keyboard extends FrameLayout implements View.OnLongClickListener {
             }
         });
         findViewById(R.id.button33).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onTypeListener != null) onTypeListener.onTypeCharacter(' ');
+            }
+        });
+        findViewById(R.id.button34).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (onTypeListener != null) onTypeListener.onTypeCharacter('\n');

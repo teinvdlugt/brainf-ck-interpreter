@@ -4,16 +4,23 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import androidx.core.text.PrecomputedTextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,10 +40,11 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
 
     private FirebaseAnalytics firebaseAnalytics;
 
-    private EditText et;
+    private EditText editText;
     private TextView outputTV;
     private CellsAdapter adapter;
     private Button clearOutputButton; // Only on x-large devices
+    private Keyboard keyboard;
 
     private boolean running = false;
     private int delay = 0;
@@ -65,11 +73,51 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
         adapter = new CellsAdapter(this, layoutManager);
         cellsRecyclerView.setAdapter(adapter);
 
-        et = findViewById(R.id.editText);
+        editText = findViewById(R.id.editText);
         outputTV = findViewById(R.id.output_textView);
         clearOutputButton = findViewById(R.id.clearOutputButton);
-        disableSoftKeyboard(et, true);
-        ((Keyboard) findViewById(R.id.keyboard)).setEditText(et);
+        keyboard = findViewById(R.id.keyboard);
+        disableSoftKeyboard(editText, true);
+        keyboard.setEditText(editText);
+        editText.requestFocus();
+
+        setupKeyboardSwitchButton();
+    }
+
+    private boolean inAppKeyboard = true;
+
+    private void setupKeyboardSwitchButton() {
+        findViewById(R.id.keyboard_switch_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (inAppKeyboard) {
+                    // Hide in-app keyboard
+                    keyboard.setVisibility(View.GONE);
+                    // Enable soft keyboard
+                    disableSoftKeyboard(editText, false);
+                    // Show soft keyboard
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+                    inAppKeyboard = false;
+                } else {
+                    // Hide soft keyboard
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                    // Disable soft keyboard
+                    disableSoftKeyboard(editText, true);
+                    // Show in-app keyboard
+                    keyboard.setVisibility(View.VISIBLE);
+                    inAppKeyboard = true;
+                }
+                // Focus editText
+                editText.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        editText.requestFocus();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -123,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
                         }).create().show();
                 return true;
             case R.id.menu_hello_world:
-                if (et.length() != 0) {
+                if (editText.length() != 0) {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.hello_world_example)
                             .setMessage(R.string.hello_world_description)
@@ -166,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
 
     private void loadHelloWorldExample() {
         stop();
-        et.setText(HELLO_WORLD_CODE);
+        editText.setText(HELLO_WORLD_CODE);
     }
 
     private void run() {
@@ -174,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
         ptr = 0;
         i = 0;
         input = -1;
-        code = et.getText().toString();
+        code = editText.getText().toString();
         outputTV.setText("");
         outputTV.setVisibility(View.GONE);
         if (clearOutputButton != null) clearOutputButton.setVisibility(View.GONE);
@@ -392,8 +440,8 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
         stop();
     }
 
-    public void disableSoftKeyboard(final EditText et, boolean prevent) { // TODO renew
-        if (prevent) {
+    public void disableSoftKeyboard(final EditText et, boolean disable) { // TODO renew
+        if (disable) {
             if (Build.VERSION.SDK_INT >= 21) {
                 et.setShowSoftInputOnFocus(false);
             } else {
