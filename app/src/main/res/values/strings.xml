@@ -39,4 +39,5 @@
     <string name="decimal">Decimal</string>
     <string name="return_xs">Return</string>
     <string name="space_xs">Space</string>
+    <string name="keyboard_toggle_xs">Use system keyboard</string>
 </resources>

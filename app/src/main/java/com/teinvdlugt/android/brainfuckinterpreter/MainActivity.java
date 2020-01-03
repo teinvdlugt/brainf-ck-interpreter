@@ -4,22 +4,11 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import androidx.core.text.PrecomputedTextCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +16,14 @@ import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-public class MainActivity extends AppCompatActivity implements InputDialogFragment.InputGivenListener {
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class MainActivity extends AppCompatActivity implements
+        InputDialogFragment.InputGivenListener, Interpreter.Listener {
     public static final String DELAY_PREFERENCE = "delay";
     private static final String HELLO_WORLD_CODE = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
     private static final int OUTPUT_MODE_ASCII = 0;
@@ -42,16 +38,10 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
 
     private EditText editText;
     private TextView outputTV;
-    private CellsAdapter adapter;
     private Button clearOutputButton; // Only on x-large devices
     private Keyboard keyboard;
 
-    private boolean running = false;
-    private int delay = 0;
-    private int ptr = 0; // TODO eliminate variable?
-    private int i = 0;
-    private String code;
-    private byte input = -1;
+    private Interpreter interpreter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +50,21 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
         setContentView(R.layout.activity_main);
 
         // Initialize saved variables
-        delay = PreferenceManager.getDefaultSharedPreferences(this)
+        int delay = PreferenceManager.getDefaultSharedPreferences(this)
                 .getInt(DELAY_PREFERENCE, 0);
         current_output_mode = PreferenceManager.getDefaultSharedPreferences(this)
                 .getInt(OUTPUT_MODE_PREFERENCE, 0);
         if (current_output_mode < 0 || current_output_mode > 4) current_output_mode = 0;
 
+        // Setup recyclerView
         RecyclerView cellsRecyclerView = findViewById(R.id.cellRecyclerView);
         cellsRecyclerView.setItemAnimator(null);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         cellsRecyclerView.setLayoutManager(layoutManager);
-        adapter = new CellsAdapter(this, layoutManager);
+        CellsAdapter adapter = new CellsAdapter(this, layoutManager);
         cellsRecyclerView.setAdapter(adapter);
 
+        // Setup other views
         editText = findViewById(R.id.editText);
         outputTV = findViewById(R.id.output_textView);
         clearOutputButton = findViewById(R.id.clearOutputButton);
@@ -80,8 +72,10 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
         disableSoftKeyboard(editText, true);
         keyboard.setEditText(editText);
         editText.requestFocus();
-
         setupKeyboardSwitchButton();
+
+        // Create interpreter
+        interpreter = new Interpreter(this, this, adapter, delay);
     }
 
     private boolean inAppKeyboard = true;
@@ -124,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
-        if (running) {
+        if (interpreter.isRunning()) {
             menu.findItem(R.id.run).setIcon(R.mipmap.ic_stop_white_24dp);
         }
 
@@ -135,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.run:
-                if (running) {
+                if (interpreter.isRunning()) {
                     stop();
                 } else {
                     run();
@@ -162,9 +156,9 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
                         .setSingleChoiceItems(entries, checkedIndex, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                delay = values[which];
+                                interpreter.setDelay(values[which]);
                                 PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
-                                        .edit().putInt(DELAY_PREFERENCE, delay).apply();
+                                        .edit().putInt(DELAY_PREFERENCE, values[which]).apply();
 
                                 dialog.dismiss();
                             }
@@ -218,220 +212,84 @@ public class MainActivity extends AppCompatActivity implements InputDialogFragme
     }
 
     private void run() {
-        adapter.clearMemory();
-        ptr = 0;
-        i = 0;
-        input = -1;
-        code = editText.getText().toString();
         outputTV.setText("");
         outputTV.setVisibility(View.GONE);
         if (clearOutputButton != null) clearOutputButton.setVisibility(View.GONE);
-        adapter.movePointer(0);
 
-        running = true;
+        interpreter.run(editText.getText().toString());
+
         invalidateOptionsMenu();
+    }
 
-        interpret();
+    @Override
+    public void doOutput(byte output) {
+        final String outputStr;
+        switch (current_output_mode) {
+            case OUTPUT_MODE_ASCII:
+                outputStr = String.valueOf((char) output);
+                break;
+            case OUTPUT_MODE_DEC:
+                outputStr = Integer.toString(output);
+                break;
+            case OUTPUT_MODE_BIN:
+                outputStr = Integer.toBinaryString(output);
+                break;
+            case OUTPUT_MODE_OCT:
+                outputStr = Integer.toOctalString(output);
+                break;
+            case OUTPUT_MODE_HEX:
+                outputStr = Integer.toHexString(output);
+                break;
+            default:
+                outputStr = null;
+        }
+        if (outputStr != null) {
+            outputTV.setVisibility(View.VISIBLE);
+            if (clearOutputButton != null)
+                clearOutputButton.setVisibility(View.VISIBLE);
+            // Insert space if not in ASCII-output mode
+            if (outputTV.length() != 0 && current_output_mode != OUTPUT_MODE_ASCII)
+                outputTV.append(" ");
+            outputTV.append(outputStr);
+        }
+    }
+
+    @Override
+    public void onFinished() {
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onError() {
+        outputTV.setVisibility(View.VISIBLE);
+        if (clearOutputButton != null)
+            clearOutputButton.setVisibility(View.VISIBLE);
+        outputTV.setText(R.string.error);
+    }
+
+    @Override
+    public void onErrorMaximumCells() {
+        outputTV.setVisibility(View.VISIBLE);
+        if (clearOutputButton != null)
+            clearOutputButton.setVisibility(View.VISIBLE);
+        outputTV.setText(getString(R.string.error_maximum_cells, CellsLayout.MAX_CELL_AMOUNT));
+
     }
 
     private void stop() {
-        running = false;
+        interpreter.stop();
         invalidateOptionsMenu();
     }
 
-    private void interpret() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (i < code.length() && running) {
-                    char token = code.charAt(i);
-                    boolean wait = true;
-                    try {
-                        if (token == '>') {
-                            ptr++;
-                            i++;
-
-                            if (ptr >= CellsLayout.MAX_CELL_AMOUNT) {
-                                outputTV.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        outputTV.setVisibility(View.VISIBLE);
-                                        if (clearOutputButton != null)
-                                            clearOutputButton.setVisibility(View.VISIBLE);
-                                        outputTV.setText(getString(R.string.error_maximum_cells, CellsLayout.MAX_CELL_AMOUNT));
-                                    }
-                                });
-                                break;
-                            }
-
-                            adapter.movePointer(ptr);
-                        } else if (token == '<') {
-                            ptr--;
-                            i++;
-
-                            if (ptr < 0) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        outputTV.setVisibility(View.VISIBLE);
-                                        if (clearOutputButton != null)
-                                            clearOutputButton.setVisibility(View.VISIBLE);
-                                        outputTV.setText(R.string.error);
-                                    }
-                                });
-                                break;
-                            }
-
-                            adapter.movePointer(ptr);
-                        } else if (token == '+') {
-                            adapter.incrementPointedCellValue();
-                            i++;
-                        } else if (token == '-') {
-                            adapter.decrementPointedCellValue();
-                            i++;
-                        } else if (token == ',') {
-                            if (input == -1 || input == 255 /* Weird bytes sometimes say that they're 255 */) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        askForInput();
-                                    }
-                                });
-                                break;
-                            } else {
-                                adapter.setPointedCellValue(input);
-                                i++;
-                                input = -1;
-                            }
-                        } else if (token == '.') {
-                            final String text;
-                            byte cellValue = adapter.getPointedCellValue();
-                            switch (current_output_mode) {
-                                case OUTPUT_MODE_ASCII:
-                                    text = String.valueOf((char) cellValue);
-                                    break;
-                                case OUTPUT_MODE_DEC:
-                                    text = Integer.toString(cellValue);
-                                    break;
-                                case OUTPUT_MODE_BIN:
-                                    text = Integer.toBinaryString(cellValue);
-                                    break;
-                                case OUTPUT_MODE_OCT:
-                                    text = Integer.toOctalString(cellValue);
-                                    break;
-                                case OUTPUT_MODE_HEX:
-                                    text = Integer.toHexString(cellValue);
-                                    break;
-                                default:
-                                    text = null;
-                            }
-                            if (text != null) {
-                                outputTV.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        outputTV.setVisibility(View.VISIBLE);
-                                        if (clearOutputButton != null)
-                                            clearOutputButton.setVisibility(View.VISIBLE);
-                                        // Insert space if not in ASCII-output mode
-                                        if (outputTV.length() != 0 && current_output_mode != OUTPUT_MODE_ASCII)
-                                            outputTV.append(" ");
-                                        outputTV.append(text);
-                                    }
-                                });
-                            }
-
-                            i++;
-                        } else if (token == '[') {
-                            if (adapter.getPointedCellValue() == 0) {
-                                i = matchingClosingBracket(i) + 1;
-                            } else {
-                                i++;
-                            }
-                        } else if (token == ']') {
-                            if (adapter.getPointedCellValue() == 0) {
-                                i++;
-                            } else {
-                                i = matchingOpeningBracket(i) + 1;
-                            }
-                        } else {
-                            // Invalid character: skip
-                            i++;
-                            wait = false;
-                        }
-                    } catch (StringIndexOutOfBoundsException e) {
-                        // Exception can be thrown when invoking matchingClosingBracket()
-                        // while there is none
-                        e.printStackTrace();
-                        outputTV.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                outputTV.setVisibility(View.VISIBLE);
-                                if (clearOutputButton != null)
-                                    clearOutputButton.setVisibility(View.VISIBLE);
-                                outputTV.setText(R.string.error);
-                            }
-                        });
-                        break;
-                    }
-
-                    if (wait) {
-                        try {
-                            Thread.sleep(delay);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                if (running) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            running = false;
-                            invalidateOptionsMenu();
-                        }
-                    });
-                }
-            }
-        }).start();
-    }
-
-    private int matchingClosingBracket(int i) {
-        int openingBrackets = 0;
-        while (true) {
-            i++;
-            if (code.charAt(i) == '[') {
-                openingBrackets++;
-            } else if (code.charAt(i) == ']') {
-                if (openingBrackets == 0) return i;
-                openingBrackets--;
-            }
-        }
-    }
-
-    private int matchingOpeningBracket(int i) {
-        int closingBrackets = 0;
-        while (true) {
-            i--;
-            if (code.charAt(i) == ']') {
-                closingBrackets++;
-            } else if (code.charAt(i) == '[') {
-                if (closingBrackets == 0) return i;
-                closingBrackets--;
-            }
-        }
-    }
-
-    private void askForInput() {
+    @Override
+    public void askForInput() {
         DialogFragment dialog = new InputDialogFragment();
         dialog.show(getSupportFragmentManager(), "InputDialogFragment");
     }
 
     @Override
     public void onInputGiven(byte input) {
-        this.input = input;
-        running = true;
-        interpret();
+        interpreter.continueOnInput(input);
     }
 
     @Override

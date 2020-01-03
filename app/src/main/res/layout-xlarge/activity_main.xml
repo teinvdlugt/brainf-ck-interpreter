@@ -64,6 +64,7 @@
     </ScrollView>
 
     <ImageButton
+        android:contentDescription="@string/keyboard_toggle_xs"
         android:id="@+id/keyboard_switch_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
