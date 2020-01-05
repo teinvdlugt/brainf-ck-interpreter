@@ -25,6 +25,10 @@ public class InputDialogFragment extends DialogFragment {
 
     public interface InputGivenListener {
         void onInputGiven(byte input);
+        /**
+         * When dialog is cancelled or dismissed. May be called multiple times.
+         */
+        void onCancelled();
     }
 
     @NonNull
@@ -33,8 +37,8 @@ public class InputDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_input, null);
-        editText = (EditText) dialogView.findViewById(R.id.inputEditText);
-        spinner = (Spinner) dialogView.findViewById(R.id.inputSpinner);
+        editText = dialogView.findViewById(R.id.inputEditText);
+        spinner = dialogView.findViewById(R.id.inputSpinner);
         initSpinner();
         setSavedInputType();
 
@@ -92,5 +96,17 @@ public class InputDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         listener = (InputGivenListener) context;
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        super.onCancel(dialog);
+        listener.onCancelled();
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        listener.onCancelled();
     }
 }

@@ -27,6 +27,18 @@
     <string name="clear_output">Clear output</string>
     <string name="clear">Clear</string>
 
+    <string name="ascii">ASCII</string>
+
+    <string name="decimal">Decimal</string>
+    <string name="return_xs">Return</string>
+    <string name="space_xs">Space</string>
+    <string name="keyboard_toggle_xs">Use system keyboard</string>
+    <string name="nothing_to_save">There is nothing to save</string>
+    <string name="save">Save</string>
+    <string name="filename">Filename</string>
+    <string name="file_saved">File saved</string>
+    <string name="file_save_error">Error while saving file</string>
+    <string name="title_activity_file">FileActivity</string>
     <string-array name="output_modes">
         <item>ASCII</item>
         <item>Decimal</item>
@@ -34,10 +46,4 @@
         <item>Octal</item>
         <item>Hexadecimal</item>
     </string-array>
-
-    <string name="ascii">ASCII</string>
-    <string name="decimal">Decimal</string>
-    <string name="return_xs">Return</string>
-    <string name="space_xs">Space</string>
-    <string name="keyboard_toggle_xs">Use system keyboard</string>
 </resources>

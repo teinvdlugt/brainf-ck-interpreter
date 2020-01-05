@@ -1,69 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.teinvdlugt.android.brainfuckinterpreter.MainActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cellRecyclerView"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/scrollview_top_margin"
-        android:layout_weight="1">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/output_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:typeface="monospace"
-                android:visibility="gone"
-                tools:text="Hello, World!"
-                tools:visibility="visible" />
-
-            <EditText
-                android:fontFamily="monospace"
-                android:id="@+id/editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/output_textView"
-                android:hint="@string/edit_text_hint"
-                android:inputType="textMultiLine"
-                android:textSize="24sp" />
-        </RelativeLayout>
-    </ScrollView>
-
-    <ImageButton
-        android:contentDescription="@string/keyboard_toggle_xs"
-        android:id="@+id/keyboard_switch_button"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_keyboard_black_24dp"
-        android:layout_gravity="end"
-        app:backgroundTint="@android:color/white"
-        android:elevation="4dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp" />
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <com.teinvdlugt.android.brainfuckinterpreter.Keyboard
-        android:id="@+id/keyboard"
-        android:layout_width="280dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center_horizontal" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include layout="@layout/content_main" />
 </LinearLayout>

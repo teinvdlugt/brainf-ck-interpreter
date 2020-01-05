@@ -4,20 +4,26 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements
     private TextView outputTV;
     private Button clearOutputButton; // Only on x-large devices
     private Keyboard keyboard;
+    private ViewGroup root; // To show SnackBars on
 
     private Interpreter interpreter;
 
@@ -48,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // Initialize saved variables
         int delay = PreferenceManager.getDefaultSharedPreferences(this)
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements
         cellsRecyclerView.setAdapter(adapter);
 
         // Setup other views
+        root = findViewById(R.id.root);
         editText = findViewById(R.id.editText);
         outputTV = findViewById(R.id.output_textView);
         clearOutputButton = findViewById(R.id.clearOutputButton);
@@ -114,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+
+    // MENU OPTIONS
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -129,75 +142,95 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.run:
-                if (interpreter.isRunning()) {
-                    stop();
-                } else {
-                    run();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "execute_code_button");
-                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                }
+                onClickRun();
                 return true;
             case R.id.delay:
-                final String[] entries = {getString(R.string.no_delay),
-                        getString(R.string.delay_ms_format, 2),
-                        getString(R.string.delay_ms_format, 10),
-                        getString(R.string.delay_ms_format, 50),
-                        getString(R.string.delay_ms_format, 100),
-                        getString(R.string.delay_ms_format, 500),
-                        getString(R.string.delay_ms_format, 1000)};
-                final int[] values = {0, 2, 10, 50, 100, 500, 1000};
-                final int checked = PreferenceManager.getDefaultSharedPreferences(this).getInt(DELAY_PREFERENCE, 2);
-                final int checkedIndex = checked == 0 ? 0 : checked == 2 ? 1 : checked == 10 ? 2 : checked == 50 ? 3 :
-                        checked == 100 ? 4 : checked == 500 ? 5 : checked == 1000 ? 6 : -1;
-
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.delay)
-                        .setSingleChoiceItems(entries, checkedIndex, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                interpreter.setDelay(values[which]);
-                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
-                                        .edit().putInt(DELAY_PREFERENCE, values[which]).apply();
-
-                                dialog.dismiss();
-                            }
-                        }).create().show();
+                onClickDelay();
                 return true;
             case R.id.menu_hello_world:
-                if (editText.length() != 0) {
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.hello_world_example)
-                            .setMessage(R.string.hello_world_description)
-                            .setPositiveButton(R.string.hello_world_positive_button, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    loadHelloWorldExample();
-                                }
-                            }).setNegativeButton(R.string.cancel, null)
-                            .create().show();
-                } else {
-                    loadHelloWorldExample();
-                }
+                onClickHelloWorldExample();
                 return true;
             case R.id.menu_output:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.output_in)
-                        .setSingleChoiceItems(R.array.output_modes, current_output_mode, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                current_output_mode = which;
-                                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit()
-                                        .putInt(OUTPUT_MODE_PREFERENCE, current_output_mode).apply();
-                                dialog.dismiss();
-                            }
-                        }).create().show();
+                onClickOutput();
                 return true;
             case R.id.menu_clear_output:
                 onClickClearOutput(null);
+            case R.id.menu_save:
+                onClickSave();
             default:
                 return false;
         }
+    }
+
+    private void onClickRun() {
+        if (interpreter.isRunning()) {
+            stop();
+        } else {
+            run();
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "execute_code_button");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        }
+    }
+
+    private void onClickHelloWorldExample() {
+        if (editText.length() != 0) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.hello_world_example)
+                    .setMessage(R.string.hello_world_description)
+                    .setPositiveButton(R.string.hello_world_positive_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            stop();
+                            editText.setText(HELLO_WORLD_CODE);
+                        }
+                    }).setNegativeButton(R.string.cancel, null)
+                    .create().show();
+        } else {
+            stop();
+            editText.setText(HELLO_WORLD_CODE);
+        }
+    }
+
+    private void onClickDelay() {
+        final String[] entries = {getString(R.string.no_delay),
+                getString(R.string.delay_ms_format, 2),
+                getString(R.string.delay_ms_format, 10),
+                getString(R.string.delay_ms_format, 50),
+                getString(R.string.delay_ms_format, 100),
+                getString(R.string.delay_ms_format, 500),
+                getString(R.string.delay_ms_format, 1000)};
+        final int[] values = {0, 2, 10, 50, 100, 500, 1000};
+        final int checked = PreferenceManager.getDefaultSharedPreferences(this).getInt(DELAY_PREFERENCE, 2);
+        final int checkedIndex = checked == 0 ? 0 : checked == 2 ? 1 : checked == 10 ? 2 : checked == 50 ? 3 :
+                checked == 100 ? 4 : checked == 500 ? 5 : checked == 1000 ? 6 : -1;
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.delay)
+                .setSingleChoiceItems(entries, checkedIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        interpreter.setDelay(values[which]);
+                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                                .edit().putInt(DELAY_PREFERENCE, values[which]).apply();
+
+                        dialog.dismiss();
+                    }
+                }).create().show();
+    }
+
+    private void onClickOutput() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.output_in)
+                .setSingleChoiceItems(R.array.output_modes, current_output_mode, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        current_output_mode = which;
+                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit()
+                                .putInt(OUTPUT_MODE_PREFERENCE, current_output_mode).apply();
+                        dialog.dismiss();
+                    }
+                }).create().show();
     }
 
     public void onClickClearOutput(View view) {
@@ -206,10 +239,84 @@ public class MainActivity extends AppCompatActivity implements
         if (clearOutputButton != null) clearOutputButton.setVisibility(View.GONE);
     }
 
-    private void loadHelloWorldExample() {
-        stop();
-        editText.setText(HELLO_WORLD_CODE);
+    public void onClickSave() {
+        final String code = editText.getText().toString();
+
+        // Check if there is something to save
+        if (code.trim().isEmpty()) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.nothing_to_save)
+                    .setPositiveButton(R.string.ok, null)
+                    .create().show();
+            return;
+        }
+
+        // Show filename dialog
+        View view = getLayoutInflater().inflate(R.layout.dialog_filename, null);
+        final EditText filenameET = view.findViewById(R.id.filename_editText);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean success = IOUtils.save(MainActivity.this, code, filenameET.getText().toString());
+                        if (success)
+                            Snackbar.make(root, R.string.file_saved, Snackbar.LENGTH_LONG).show();
+                        else
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setMessage(R.string.file_save_error)
+                                    .setPositiveButton(R.string.ok, null)
+                                    .create().show();
+                    }
+                }).setNegativeButton(R.string.cancel, null)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        // Hide keyboard
+                        editText.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                                        .hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                            }
+                        }, 5); // Sketchy but can't find another way
+                    }
+                })
+                .create();
+        filenameET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 0)
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                else
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        dialog.show();
+
+        // Focus and show keyboard
+        filenameET.requestFocus();
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(filenameET, 0);
+            }
+        });
     }
+
+
+    // INTERPRETER METHODS
+
 
     private void run() {
         outputTV.setText("");
@@ -218,6 +325,11 @@ public class MainActivity extends AppCompatActivity implements
 
         interpreter.run(editText.getText().toString());
 
+        invalidateOptionsMenu();
+    }
+
+    private void stop() {
+        interpreter.stop();
         invalidateOptionsMenu();
     }
 
@@ -255,6 +367,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void askForInput() {
+        DialogFragment dialog = new InputDialogFragment();
+        dialog.show(getSupportFragmentManager(), "InputDialogFragment");
+    }
+
+    @Override
+    public void onInputGiven(byte input) {
+        interpreter.continueOnInput(input);
+    }
+
+    @Override
+    public void onCancelled() {
+        // When input dialog is cancelled
+        interpreter.stop();
+        invalidateOptionsMenu();
+    }
+
+    @Override
     public void onFinished() {
         invalidateOptionsMenu();
     }
@@ -273,24 +403,8 @@ public class MainActivity extends AppCompatActivity implements
         if (clearOutputButton != null)
             clearOutputButton.setVisibility(View.VISIBLE);
         outputTV.setText(getString(R.string.error_maximum_cells, CellsLayout.MAX_CELL_AMOUNT));
-
     }
 
-    private void stop() {
-        interpreter.stop();
-        invalidateOptionsMenu();
-    }
-
-    @Override
-    public void askForInput() {
-        DialogFragment dialog = new InputDialogFragment();
-        dialog.show(getSupportFragmentManager(), "InputDialogFragment");
-    }
-
-    @Override
-    public void onInputGiven(byte input) {
-        interpreter.continueOnInput(input);
-    }
 
     @Override
     protected void onPause() {
