@@ -38,7 +38,8 @@
     <string name="filename">Filename</string>
     <string name="file_saved">File saved</string>
     <string name="file_save_error">Error while saving file</string>
-    <string name="title_activity_file">FileActivity</string>
+    <string name="title_activity_file">Saved scripts</string>
+    <string name="load">Load</string>
     <string-array name="output_modes">
         <item>ASCII</item>
         <item>Decimal</item>

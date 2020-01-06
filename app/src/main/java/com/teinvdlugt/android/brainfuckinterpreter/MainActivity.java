@@ -1,6 +1,7 @@
 package com.teinvdlugt.android.brainfuckinterpreter;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,7 +17,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -155,8 +155,13 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.menu_clear_output:
                 onClickClearOutput(null);
+                return true;
             case R.id.menu_save:
                 onClickSave();
+                return true;
+            case R.id.menu_load:
+                onClickLoad();
+                return true;
             default:
                 return false;
         }
@@ -312,6 +317,10 @@ public class MainActivity extends AppCompatActivity implements
                 ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(filenameET, 0);
             }
         });
+    }
+
+    public void onClickLoad() {
+        startActivity(new Intent(this, FilesActivity.class));
     }
 
 

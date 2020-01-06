@@ -27,7 +27,12 @@
         android:id="@+id/menu_clear_output"
         android:orderInCategory="104"
         android:title="@string/clear_output" />
-    <item android:id="@+id/menu_save"
+    <item
+        android:id="@+id/menu_save"
         android:orderInCategory="105"
         android:title="@string/save" />
+    <item
+        android:id="@+id/menu_load"
+        android:orderInCategory="106"
+        android:title="@string/load" />
 </menu>

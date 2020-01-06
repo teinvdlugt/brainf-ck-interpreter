@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="?selectableItemBackground"
+    android:id="@+id/list_item_root">
+
+    <TextView
+        android:id="@+id/filename_textView"
+        tools:text="Program"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textSize="16sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:id="@+id/date_textView"
+        tools:text="14 Mar 2010"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
