@@ -6,4 +6,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="pointerCell">#ffe98a</color>
+
+    <color name="listItemActivatedColor">#E0E0E0</color>
+    <color name="actionModeBackgroundColor">#273583</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.teinvdlugt.android.brainfuckinterpreter;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
         if (clearOutputButton != null) clearOutputButton.setVisibility(View.GONE);
     }
 
-    public void onClickSave() {
+    public void onClickSave() { // TODO warn when overwriting file
         final String code = editText.getText().toString();
 
         // Check if there is something to save
@@ -257,21 +259,39 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // Show filename dialog
-        View view = getLayoutInflater().inflate(R.layout.dialog_filename, null);
-        final EditText filenameET = view.findViewById(R.id.filename_editText);
-        final AlertDialog dialog = new AlertDialog.Builder(this)
+        showEditTextDialog(this, new EditTextDialogListener() {
+            @Override
+            public void onPositive(String text) {
+                boolean success = IOUtils.save(MainActivity.this, code, text);
+                if (success)
+                    Snackbar.make(root, R.string.file_saved, Snackbar.LENGTH_LONG).show();
+                else
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setMessage(R.string.file_save_error)
+                            .setPositiveButton(R.string.ok, null)
+                            .create().show();
+            }
+        }, null);
+    }
+
+    interface EditTextDialogListener {
+        void onPositive(String text);
+    }
+
+    /**
+     * initialText will be filled in EditText and selected
+     */
+    public static void showEditTextDialog(final Context context, final EditTextDialogListener listener, String initialText) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_filename, null);
+        final EditText editText = view.findViewById(R.id.filename_editText);
+        editText.setText(initialText);
+        editText.selectAll();
+        final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(view)
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        boolean success = IOUtils.save(MainActivity.this, code, filenameET.getText().toString());
-                        if (success)
-                            Snackbar.make(root, R.string.file_saved, Snackbar.LENGTH_LONG).show();
-                        else
-                            new AlertDialog.Builder(MainActivity.this)
-                                    .setMessage(R.string.file_save_error)
-                                    .setPositiveButton(R.string.ok, null)
-                                    .create().show();
+                        listener.onPositive(editText.getText().toString());
                     }
                 }).setNegativeButton(R.string.cancel, null)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -281,14 +301,14 @@ public class MainActivity extends AppCompatActivity implements
                         editText.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                                ((InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE))
                                         .hideSoftInputFromWindow(editText.getWindowToken(), 0);
                             }
                         }, 5); // Sketchy but can't find another way
                     }
                 })
                 .create();
-        filenameET.addTextChangedListener(new TextWatcher() {
+        editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -310,11 +330,11 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show();
 
         // Focus and show keyboard
-        filenameET.requestFocus();
+        editText.requestFocus();
         view.post(new Runnable() {
             @Override
             public void run() {
-                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(filenameET, 0);
+                ((InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(editText, 0);
             }
         });
     }

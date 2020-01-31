@@ -2,13 +2,14 @@ package com.teinvdlugt.android.brainfuckinterpreter;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +53,13 @@ public class IOUtils {
                     Date fileDate = new Date(file.lastModified());
                     list.add(new FilesActivity.FileInfo(filename, fileDate));
                 }
+                // Sort alphabetically
+                Collections.sort(list, new Comparator<FilesActivity.FileInfo>() {
+                    @Override
+                    public int compare(FilesActivity.FileInfo o1, FilesActivity.FileInfo o2) {
+                        return o1.getFilename().compareTo(o2.getFilename());
+                    }
+                });
                 return list;
             } catch (SecurityException e) {
                 e.printStackTrace();
@@ -59,6 +67,23 @@ public class IOUtils {
                 return null;
             }
         } else return null;
+    }
+
+    /**
+     * Remove files with filenames from theDirectory().
+     */
+    public static void removeFiles(Context context, List<String> filenames) {
+        if (isExternalStorageWritable()) {
+            for (String filename : filenames) {
+                new File(theDirectory(context), filename).delete();
+            }
+        }
+    }
+
+    public static boolean rename(Context context, String oldName, String newName) {
+        if (isExternalStorageWritable()) {
+            return new File(theDirectory(context), oldName).renameTo(new File(theDirectory(context), newName));
+        } else return false;
     }
 
 

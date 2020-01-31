@@ -40,6 +40,11 @@
     <string name="file_save_error">Error while saving file</string>
     <string name="title_activity_file">Saved scripts</string>
     <string name="load">Load</string>
+    <string name="no_saved_scripts" formatted="false">Save your scripts or move files into the directory %s</string>
+    <string name="files_load_error">An error occurred while trying to load the saved files.</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="file_rename_error">Error while renaming file</string>
     <string-array name="output_modes">
         <item>ASCII</item>
         <item>Decimal</item>
