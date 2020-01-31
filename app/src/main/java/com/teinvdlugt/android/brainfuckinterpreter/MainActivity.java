@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -271,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements
                             .setPositiveButton(R.string.ok, null)
                             .create().show();
             }
-        }, null);
+        }, null, editText);
     }
 
     interface EditTextDialogListener {
@@ -279,13 +280,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * initialText will be filled in EditText and selected
+     * initialText will be filled in EditText and selected.
+     * {@code aView} should be a View from the activity, and is used to hide the Keyboard.
      */
-    public static void showEditTextDialog(final Context context, final EditTextDialogListener listener, String initialText) {
+    public static void showEditTextDialog(final Context context, final EditTextDialogListener listener, String initialText, final View aView) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_filename, null);
         final EditText editText = view.findViewById(R.id.filename_editText);
-        editText.setText(initialText);
-        editText.selectAll();
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(view)
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
@@ -298,16 +298,17 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         // Hide keyboard
-                        editText.postDelayed(new Runnable() {
+                        aView.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 ((InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE))
-                                        .hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                                        .hideSoftInputFromWindow(aView.getWindowToken(), 0);
                             }
                         }, 5); // Sketchy but can't find another way
                     }
                 })
                 .create();
+        dialog.show();
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -327,7 +328,8 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         });
-        dialog.show();
+        editText.setText(initialText);
+        editText.selectAll();
 
         // Focus and show keyboard
         editText.requestFocus();
@@ -339,8 +341,24 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    // Interactions with FilesActivity
+
+    private static final int FILES_ACTIVITY_RQ = 1;
+    public static final String SCRIPT_EXTRA = "script_string";
+
     public void onClickLoad() {
-        startActivity(new Intent(this, FilesActivity.class));
+        startActivityForResult(new Intent(this, FilesActivity.class), FILES_ACTIVITY_RQ);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == FILES_ACTIVITY_RQ
+                && resultCode == RESULT_OK
+                && data != null && data.hasExtra(SCRIPT_EXTRA)) {
+            editText.setText(data.getStringExtra(SCRIPT_EXTRA));
+            editText.setSelection(editText.getText().length());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 

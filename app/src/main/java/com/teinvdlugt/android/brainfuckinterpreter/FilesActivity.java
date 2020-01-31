@@ -1,5 +1,6 @@
 package com.teinvdlugt.android.brainfuckinterpreter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -125,7 +126,7 @@ public class FilesActivity extends AppCompatActivity {
                             adapter.selectedItems.clear();
                         }
                     }
-                }, adapter.data.get(selectedItem).filename);
+                }, adapter.data.get(selectedItem).filename, recyclerView);
                 actionMode.finish();
             }
             return true;
@@ -210,8 +211,13 @@ public class FilesActivity extends AppCompatActivity {
                         handleClickInActionMode();
                     } else {
                         // Not in selection mode; load the script
-                        // TODO load script
-                        Toast.makeText(FilesActivity.this, "loading file", Toast.LENGTH_SHORT).show();
+                        String script = IOUtils.loadFile(FilesActivity.this, adapter.data.get(position).filename);
+                        if (script != null) {
+                            setResult(RESULT_OK, new Intent().putExtra(MainActivity.SCRIPT_EXTRA, script));
+                            finish();
+                        } else {
+                            Snackbar.make(recyclerView, R.string.file_load_error, Snackbar.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });

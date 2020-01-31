@@ -45,6 +45,7 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
     <string name="file_rename_error">Error while renaming file</string>
+    <string name="file_load_error">Error while loading file</string>
     <string-array name="output_modes">
         <item>ASCII</item>
         <item>Decimal</item>

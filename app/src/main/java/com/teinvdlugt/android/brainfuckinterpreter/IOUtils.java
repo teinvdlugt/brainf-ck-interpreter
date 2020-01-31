@@ -3,9 +3,13 @@ package com.teinvdlugt.android.brainfuckinterpreter;
 import android.content.Context;
 import android.os.Environment;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,6 +88,24 @@ public class IOUtils {
         if (isExternalStorageWritable()) {
             return new File(theDirectory(context), oldName).renameTo(new File(theDirectory(context), newName));
         } else return false;
+    }
+
+    public static String loadFile(Context context, String filename) {
+        if (isExternalStorageReadable()) {
+            try {
+                BufferedReader bR = new BufferedReader(new FileReader(new File(theDirectory(context), filename)));
+                StringBuilder result = new StringBuilder();
+                String line;
+                while ((line = bR.readLine()) != null) {
+                    result.append(line).append('\n');
+                }
+                // Remove last newline char
+                if (result.length() > 0) result.deleteCharAt(result.length() - 1);
+                return result.toString();
+            } catch (IOException e) {
+                return null;
+            }
+        } else return null;
     }
 
 
