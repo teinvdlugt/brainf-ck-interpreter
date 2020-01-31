@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,6 +72,21 @@ public class IOUtils {
                 return null;
             }
         } else return null;
+    }
+
+    /**
+     * Retrieves list of all files in theDirectory(),
+     * returns empty list in case of error.
+     */
+    public static List<String> loadFilenameList(Context context) {
+        if (isExternalStorageReadable()) {
+            List<String> result = new ArrayList<>();
+            try {
+                for (File file : theDirectory(context).listFiles())
+                    result.add(file.getName());
+            } catch (SecurityException e) { /* ignored */ }
+            return result;
+        } else return new ArrayList<>();
     }
 
     /**

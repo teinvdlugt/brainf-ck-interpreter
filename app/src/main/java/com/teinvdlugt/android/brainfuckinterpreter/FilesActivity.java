@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -112,7 +111,14 @@ public class FilesActivity extends AppCompatActivity {
                 final int selectedItem = adapter.selectedItems.iterator().next();
                 final String oldFilename = adapter.data.get(selectedItem).filename;
                 // Show filename dialog
+                final List<String> existingFilenames = IOUtils.loadFilenameList(FilesActivity.this);
+                existingFilenames.remove(oldFilename);
                 MainActivity.showEditTextDialog(FilesActivity.this, new MainActivity.EditTextDialogListener() {
+                    @Override
+                    public boolean enableSaveButtonOnTextChange(CharSequence text) {
+                        return text.length() != 0 && !existingFilenames.contains(text.toString());
+                    }
+
                     @Override
                     public void onPositive(String newFileName) {
                         if (IOUtils.rename(FilesActivity.this, oldFilename, newFileName)) {

@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.List;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -260,7 +262,13 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // Show filename dialog
+        final List<String> existingFilenames = IOUtils.loadFilenameList(this);
         showEditTextDialog(this, new EditTextDialogListener() {
+            @Override
+            public boolean enableSaveButtonOnTextChange(CharSequence text) {
+                return text.length() != 0 && !existingFilenames.contains(text.toString());
+            }
+
             @Override
             public void onPositive(String text) {
                 boolean success = IOUtils.save(MainActivity.this, code, text);
@@ -276,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     interface EditTextDialogListener {
+        boolean enableSaveButtonOnTextChange(CharSequence text);
         void onPositive(String text);
     }
 
@@ -317,10 +326,10 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() == 0)
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                else
+                if (listener.enableSaveButtonOnTextChange(s))
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                else
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             }
 
             @Override
