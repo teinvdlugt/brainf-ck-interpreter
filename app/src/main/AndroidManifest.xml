@@ -13,7 +13,7 @@
         <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:name=".MainActivity"
-            android:windowSoftInputMode="stateUnchanged"> <!-- TODO remove this line! -->
+            android:windowSoftInputMode="stateUnchanged"> <!-- TODO does not yet work as intended! -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

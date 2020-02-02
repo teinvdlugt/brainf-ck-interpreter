@@ -1,51 +1,32 @@
 <resources>
     <string name="app_name">Brainf*ck Interpreter</string>
+
+    <!-- Keyboard -->
+    <string name="backspace_xs">Backspace</string>
+    <string name="return_xs">Return</string>
+    <string name="space_xs">Space</string>
     <string name="pointerNext" translatable="false"><![CDATA[>]]></string>
     <string name="pointerPrevious" translatable="false"><![CDATA[<]]></string>
-    <string name="backspace_xs">backspace</string>
     <string name="increment" translatable="false">+</string>
     <string name="decrement" translatable="false">-</string>
     <string name="output" translatable="false">.</string>
     <string name="bracket_open" translatable="false">[</string>
     <string name="bracket_close" translatable="false">]</string>
     <string name="input" translatable="false">,</string>
+    <string name="keyboard_toggle_xs">Use system keyboard</string>
+
+    <!-- Main screen -->
     <string name="edit_text_hint">Start coding</string>
     <string name="run">Run</string>
-    <string name="ok">OK</string>
     <string name="delay">Delay</string>
     <string name="no_delay">No delay (not recommended for long-running programs)</string>
     <string name="delay_ms_format" formatted="false">%d ms</string>
-    <string name="error">Error</string>
-    <string name="error_maximum_cells" formatted="false">Error: there is a maximum of %d memory cells</string>
-    <string name="input_dialog_title">Provide input</string>
     <string name="hello_world_example">Hello World example</string>
     <string name="hello_world_description">This will load example code printing \"Hello World!\" to the screen and will erase the code currently in the text field. Proceed?</string>
     <string name="hello_world_positive_button">Continue</string>
-    <string name="cancel">Cancel</string>
     <string name="menu_output">Output</string>
     <string name="output_in">Output in…</string>
     <string name="clear_output">Clear output</string>
-    <string name="clear">Clear</string>
-
-    <string name="ascii">ASCII</string>
-
-    <string name="decimal">Decimal</string>
-    <string name="return_xs">Return</string>
-    <string name="space_xs">Space</string>
-    <string name="keyboard_toggle_xs">Use system keyboard</string>
-    <string name="nothing_to_save">There is nothing to save</string>
-    <string name="save">Save</string>
-    <string name="filename">Filename</string>
-    <string name="file_saved">File saved</string>
-    <string name="file_save_error">Error while saving file</string>
-    <string name="title_activity_file">Saved scripts</string>
-    <string name="load">Load</string>
-    <string name="no_saved_scripts" formatted="false">Save your scripts or move files into the directory %s</string>
-    <string name="files_load_error">An error occurred while trying to load the saved files.</string>
-    <string name="delete">Delete</string>
-    <string name="rename">Rename</string>
-    <string name="file_rename_error">Error while renaming file</string>
-    <string name="file_load_error">Error while loading file</string>
     <string-array name="output_modes">
         <item>ASCII</item>
         <item>Decimal</item>
@@ -53,4 +34,27 @@
         <item>Octal</item>
         <item>Hexadecimal</item>
     </string-array>
+    <string name="input_dialog_title">Provide input</string>
+    <string name="ascii">ASCII</string>
+    <string name="decimal">Decimal</string>
+    <string name="error">Error</string>
+    <string name="error_maximum_cells" formatted="false">Error: there is a maximum of %d memory cells</string>
+    <string name="clear">Clear</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Saving -->
+    <string name="nothing_to_save">There is nothing to save</string>
+    <string name="save">Save</string>
+    <string name="load">Load</string>
+    <string name="filename">Filename</string>
+    <string name="file_saved">File saved</string>
+    <string name="file_save_error">Error while saving file</string>
+    <string name="title_activity_file">Saved scripts</string>
+    <string name="no_saved_scripts" formatted="false">Save your scripts or move files into the directory %s</string>
+    <string name="files_load_error">An error occurred while trying to load the saved files.</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="file_rename_error">Error while renaming file</string>
+    <string name="file_load_error">Error while loading file</string>
 </resources>
