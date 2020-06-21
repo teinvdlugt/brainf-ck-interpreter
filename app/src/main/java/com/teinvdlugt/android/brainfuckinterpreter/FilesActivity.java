@@ -219,7 +219,9 @@ public class FilesActivity extends AppCompatActivity {
                         // Not in selection mode; load the script
                         String script = IOUtils.loadFile(FilesActivity.this, adapter.data.get(position).filename);
                         if (script != null) {
-                            setResult(RESULT_OK, new Intent().putExtra(MainActivity.SCRIPT_EXTRA, script));
+                            setResult(RESULT_OK, new Intent()
+                                    .putExtra(MainActivity.SCRIPT_EXTRA, script)
+                                    .putExtra(MainActivity.FILENAME_EXTRA, filename));
                             finish();
                         } else {
                             Snackbar.make(recyclerView, R.string.file_load_error, Snackbar.LENGTH_SHORT).show();

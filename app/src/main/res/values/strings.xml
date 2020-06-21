@@ -64,4 +64,6 @@
     <string name="day_theme">Day theme</string>
     <string name="night_theme">Night theme</string>
     <string name="system_default_theme">System default</string>
+    <string name="file_loaded_format">File \'%s\' loaded</string>
+    <string name="undo">Undo</string>
 </resources>

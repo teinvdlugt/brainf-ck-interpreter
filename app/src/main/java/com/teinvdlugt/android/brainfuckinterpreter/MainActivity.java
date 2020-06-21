@@ -361,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int FILES_ACTIVITY_RQ = 1;
     public static final String SCRIPT_EXTRA = "script_string";
+    public static final String FILENAME_EXTRA = "filename_string";
 
     public void onClickLoad() {
         startActivityForResult(new Intent(this, FilesActivity.class), FILES_ACTIVITY_RQ);
@@ -371,8 +372,19 @@ public class MainActivity extends AppCompatActivity implements
         if (requestCode == FILES_ACTIVITY_RQ
                 && resultCode == RESULT_OK
                 && data != null && data.hasExtra(SCRIPT_EXTRA)) {
+            final String oldCode = editText.getText().toString();
             editText.setText(data.getStringExtra(SCRIPT_EXTRA));
             editText.setSelection(editText.getText().length());
+            String filename = data.getStringExtra(FILENAME_EXTRA);
+            Snackbar.make(root, getString(R.string.file_loaded_format, filename), 4000)
+                    .setAction(R.string.undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            editText.setText(oldCode);
+                            editText.setSelection(editText.getText().length());
+                        }
+                    })
+                    .show();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

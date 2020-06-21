@@ -12,12 +12,6 @@ public class CellsAdapter extends RecyclerView.Adapter<CellsAdapter.ViewHolder> 
     private int pointedCellPosition = 0;
     private Cell pointedCell;
     private LinearLayoutManager layoutManager;
-    private Runnable notifyItemChangedRunnable = new Runnable() {
-        @Override
-        public void run() {
-            notifyItemChanged(pointedCellPosition);
-        }
-    };
 
     public CellsAdapter(Activity context, LinearLayoutManager layoutManager) {
         this.context = context;
