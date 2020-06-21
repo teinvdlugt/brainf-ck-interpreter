@@ -46,7 +46,7 @@
     <!-- Saving -->
     <string name="nothing_to_save">There is nothing to save</string>
     <string name="save">Save</string>
-    <string name="load">Load</string>
+    <string name="load">Load…</string>
     <string name="filename">Filename</string>
     <string name="file_saved">File saved</string>
     <string name="file_save_error">Error while saving file</string>

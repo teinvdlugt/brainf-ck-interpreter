@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements
     private TextView outputTV;
     private Button clearOutputButton; // Only on x-large devices
     private Keyboard keyboard;
-    private ViewGroup root; // To show SnackBars on
+    private CoordinatorLayout coordinatorLayout; // To attach SnackBars to
 
     private Interpreter interpreter;
 
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
         cellsRecyclerView.setAdapter(adapter);
 
         // Setup other views
-        root = findViewById(R.id.root);
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
         editText = findViewById(R.id.editText);
         outputTV = findViewById(R.id.output_textView);
         clearOutputButton = findViewById(R.id.clearOutputButton);
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onPositive(String text) {
                 boolean success = IOUtils.save(MainActivity.this, code, text);
                 if (success)
-                    Snackbar.make(root, R.string.file_saved, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinatorLayout, R.string.file_saved, Snackbar.LENGTH_LONG).show();
                 else
                     new AlertDialog.Builder(MainActivity.this)
                             .setMessage(R.string.file_save_error)
@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements
             editText.setText(data.getStringExtra(SCRIPT_EXTRA));
             editText.setSelection(editText.getText().length());
             String filename = data.getStringExtra(FILENAME_EXTRA);
-            Snackbar.make(root, getString(R.string.file_loaded_format, filename), 4000)
+            Snackbar.make(coordinatorLayout, getString(R.string.file_loaded_format, filename), 4000)
                     .setAction(R.string.undo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
