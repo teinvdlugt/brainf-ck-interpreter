@@ -35,4 +35,8 @@
         android:id="@+id/menu_load"
         android:orderInCategory="106"
         android:title="@string/load" />
+    <item
+        android:id="@+id/night_theme"
+        android:orderInCategory="107"
+        android:title="@string/theme_ellipsis" />
 </menu>

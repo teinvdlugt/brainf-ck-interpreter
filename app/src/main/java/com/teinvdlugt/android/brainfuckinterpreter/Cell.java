@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 public class Cell extends TextView {
 
     private Paint linePaint;
@@ -27,15 +29,21 @@ public class Cell extends TextView {
     }
 
     private void init() {
+        // Get primary text color
+        TypedValue typedValue = new TypedValue();
+        getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        int color = ContextCompat.getColor(getContext(), typedValue.resourceId);
+
         linePaint = new Paint();
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setStrokeWidth(3);
         linePaint.setAntiAlias(true);
+        linePaint.setColor(color);
 
         int _8dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
         setPadding(_8dp, _8dp, _8dp, _8dp);
         setTextSize(24);
-        setTextColor(Color.BLACK);
+        setTextColor(color);
     }
 
     public Cell(Context context) {

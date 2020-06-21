@@ -23,11 +23,13 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity implements
         InputDialogFragment.InputGivenListener, Interpreter.Listener {
+    public static final String DAY_NIGHT_THEME_PREF = "theme";
     public static final String DELAY_PREFERENCE = "delay";
     private static final String HELLO_WORLD_CODE = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
     private static final int OUTPUT_MODE_ASCII = 0;
@@ -61,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        AppCompatDelegate.setDefaultNightMode(PreferenceManager.getDefaultSharedPreferences(this)
+                .getInt(DAY_NIGHT_THEME_PREF, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
         // Initialize saved variables
         int delay = PreferenceManager.getDefaultSharedPreferences(this)
@@ -167,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_load:
                 onClickLoad();
                 return true;
+            case R.id.night_theme:
+                onClickTheme();
             default:
                 return false;
         }
@@ -368,6 +375,27 @@ public class MainActivity extends AppCompatActivity implements
             editText.setSelection(editText.getText().length());
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    private void onClickTheme() {
+        final int[] options = new int[]{AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM};
+        String[] optionTexts = new String[]{getString(R.string.day_theme), getString(R.string.night_theme), getString(R.string.system_default_theme)};
+        int currentSelectedIndex = Arrays.asList(AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM).indexOf(
+                PreferenceManager.getDefaultSharedPreferences(this)
+                        .getInt(DAY_NIGHT_THEME_PREF, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.theme)
+                .setSingleChoiceItems(optionTexts, currentSelectedIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit()
+                                .putInt(DAY_NIGHT_THEME_PREF, options[which]).apply();
+                        AppCompatDelegate.setDefaultNightMode(options[which]);
+                        dialog.dismiss();
+                    }
+                }).create().show();
     }
 
 

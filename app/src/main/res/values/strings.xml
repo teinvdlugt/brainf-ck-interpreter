@@ -57,4 +57,11 @@
     <string name="rename">Rename</string>
     <string name="file_rename_error">Error while renaming file</string>
     <string name="file_load_error">Error while loading file</string>
+
+    <!-- Theme -->
+    <string name="theme">Theme</string>
+    <string name="theme_ellipsis">Theme…</string>
+    <string name="day_theme">Day theme</string>
+    <string name="night_theme">Night theme</string>
+    <string name="system_default_theme">System default</string>
 </resources>
