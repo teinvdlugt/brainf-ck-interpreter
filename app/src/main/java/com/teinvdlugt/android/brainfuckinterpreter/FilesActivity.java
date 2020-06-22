@@ -1,7 +1,10 @@
 package com.teinvdlugt.android.brainfuckinterpreter;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.Toolbar;
@@ -94,18 +98,56 @@ public class FilesActivity extends AppCompatActivity {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             if (item.getItemId() == deleteMenuItemId) {
-                // Remove file(s)
-                IOUtils.removeFiles(FilesActivity.this, adapter.getFileNamesAtSelectedIndices());
-                // Update adapter.data
-                loadFileList();
-                // NotifyItemRemoved changed in descending order
-                Integer[] indices = adapter.selectedItems.toArray(new Integer[0]);
-                Arrays.sort(indices);
-                for (int i = indices.length - 1; i >= 0; i--) {
-                    adapter.notifyItemRemoved(indices[i]);
+                List<String> filenames = adapter.getFileNamesAtSelectedIndices();
+                if (filenames.size() == 0) return false;
+
+                // Compose confirmation message
+                SpannableStringBuilder sb = new SpannableStringBuilder(
+                        getString(filenames.size() == 1
+                                ? R.string.delete_confirmation_pt1_singular
+                                : R.string.delete_confirmation_pt1_plural));
+                sb.append(" ");
+                for (int i = 0; i < filenames.size(); i++) {
+                    sb.append(filenames.get(i), new StyleSpan(android.graphics.Typeface.BOLD), 0);
+                    if (i < filenames.size() - 2)
+                        sb.append(", ");
+                    else if (i == filenames.size() - 2)
+                        sb.append(" and ");
                 }
-                adapter.selectedItems.clear();
-                actionMode.finish();
+                sb.append(getString(R.string.delete_confirmation_pt2));
+
+                // Show dialog
+                new AlertDialog.Builder(FilesActivity.this)
+                        .setTitle(R.string.deleting_files)
+                        .setMessage(sb)
+                        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Remove file(s)
+                                IOUtils.removeFiles(FilesActivity.this, adapter.getFileNamesAtSelectedIndices());
+                                // Update adapter.data
+                                loadFileList();
+                                adapter.notifyDataSetChanged();
+                                /*// NotifyItemRemoved in descending order
+                                Integer[] indices = adapter.selectedItems.toArray(new Integer[0]);
+                                Arrays.sort(indices);
+                                for (int i = indices.length - 1; i >= 0; i--) {
+                                    adapter.notifyItemRemoved(indices[i]);
+                                }*/
+                                // Clear selection
+                                adapter.selectedItems.clear();
+                                actionMode.finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Clear selection
+                                adapter.selectedItems.clear();
+                                actionMode.finish();
+                            }
+                        })
+                        .create().show();
             } else if (item.getItemId() == renameMenuItemId) {
                 // Rename file
                 final int selectedItem = adapter.selectedItems.iterator().next();

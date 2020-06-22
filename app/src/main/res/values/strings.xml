@@ -66,4 +66,8 @@
     <string name="system_default_theme">System default</string>
     <string name="file_loaded_format">File \'%s\' loaded</string>
     <string name="undo">Undo</string>
+    <string name="delete_confirmation_pt1_singular">Are you sure you want to delete the file</string>
+    <string name="delete_confirmation_pt1_plural">Are you sure you want to delete the files</string>
+    <string name="delete_confirmation_pt2">\?</string>
+    <string name="deleting_files">Deleting files</string> <!-- Resulting string: pt1 + " <file1>, <file2> and <file3> " + pt2 -->
 </resources>

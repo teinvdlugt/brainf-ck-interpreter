@@ -7,6 +7,6 @@
 
     <color name="pointerCell">#74FFD740</color>
 
-    <color name="listItemActivatedColor">#E0E0E0</color>
+    <color name="listItemActivatedColor">#52797979</color>
     <color name="actionModeBackgroundColor">#273583</color>
 </resources>
