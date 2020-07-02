@@ -148,7 +148,12 @@ public class Interpreter {
                     } catch (StringIndexOutOfBoundsException e) {
                         // Exception can be thrown when invoking matchingClosingBracket()
                         // while there is none
-                        listener.onError();
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onError();
+                            }
+                        });
                         break;
                     }
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Brainf*ck Interpreter</string>
+    <string name="app_name">Brainf**k Interpreter</string>
 
     <!-- Keyboard -->
     <string name="backspace_xs">Backspace</string>
@@ -24,6 +24,7 @@
     <string name="hello_world_example">Hello World example</string>
     <string name="hello_world_description">This will load example code printing \"Hello World!\" to the screen and will erase the code currently in the text field. Proceed?</string>
     <string name="hello_world_positive_button">Continue</string>
+    <string name="hello_world_example_loaded">Hello World example loaded</string>
     <string name="menu_output">Output</string>
     <string name="output_in">Output in…</string>
     <string name="clear_output">Clear output</string>
@@ -44,9 +45,9 @@
     <string name="cancel">Cancel</string>
 
     <!-- Saving -->
-    <string name="nothing_to_save">There is nothing to save</string>
     <string name="save">Save</string>
     <string name="load">Load…</string>
+    <string name="nothing_to_save">There is nothing to save</string>
     <string name="filename">Filename</string>
     <string name="file_saved">File saved</string>
     <string name="file_save_error">Error while saving file</string>
@@ -57,6 +58,12 @@
     <string name="rename">Rename</string>
     <string name="file_rename_error">Error while renaming file</string>
     <string name="file_load_error">Error while loading file</string>
+    <string name="file_loaded_format">File \'%s\' loaded</string>
+    <string name="undo">Undo</string>
+    <string name="delete_confirmation_pt1_singular">Are you sure you want to delete the file</string>
+    <string name="delete_confirmation_pt1_plural">Are you sure you want to delete the files</string>
+    <string name="delete_confirmation_pt2">\?</string> <!-- Resulting string: pt1 + " <file1>, <file2> and <file3> " + pt2 -->
+    <string name="deleting_files">Deleting files</string>
 
     <!-- Theme -->
     <string name="theme">Theme</string>
@@ -64,10 +71,4 @@
     <string name="day_theme">Day theme</string>
     <string name="night_theme">Night theme</string>
     <string name="system_default_theme">System default</string>
-    <string name="file_loaded_format">File \'%s\' loaded</string>
-    <string name="undo">Undo</string>
-    <string name="delete_confirmation_pt1_singular">Are you sure you want to delete the file</string>
-    <string name="delete_confirmation_pt1_plural">Are you sure you want to delete the files</string>
-    <string name="delete_confirmation_pt2">\?</string>
-    <string name="deleting_files">Deleting files</string> <!-- Resulting string: pt1 + " <file1>, <file2> and <file3> " + pt2 -->
 </resources>

@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void onClickHelloWorldExample() {
+        stop();
         if (editText.length() != 0) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.hello_world_example)
@@ -198,15 +199,31 @@ public class MainActivity extends AppCompatActivity implements
                     .setPositiveButton(R.string.hello_world_positive_button, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            stop();
-                            editText.setText(HELLO_WORLD_CODE);
+                            loadHelloWorldCode();
                         }
                     }).setNegativeButton(R.string.cancel, null)
                     .create().show();
         } else {
-            stop();
-            editText.setText(HELLO_WORLD_CODE);
+            loadHelloWorldCode();
         }
+    }
+
+    /**
+     * Loads Hello World code into editText and shows Undo option.
+     */
+    private void loadHelloWorldCode() {
+        final String oldCode = editText.getText().toString();
+        editText.setText(HELLO_WORLD_CODE);
+        editText.setSelection(editText.getText().length());
+        Snackbar.make(coordinatorLayout, R.string.hello_world_example_loaded, 4000)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        editText.setText(oldCode);
+                        editText.setSelection(editText.getText().length());
+                    }
+                })
+                .show();
     }
 
     private void onClickDelay() {
