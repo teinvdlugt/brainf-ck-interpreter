@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Brainf*ck Interpreter</string>
+    <string name="app_name">Brainf**k Interpreter</string>
     <string name="backspace_xs">Cancella</string>
     <string name="edit_text_hint">Inizia a programmare</string>
     <string name="run">Avvia</string>
@@ -30,4 +30,33 @@
 
     <string name="ascii">ASCII</string>
     <string name="decimal">Decimale</string>
+    <string name="return_xs">Indietro</string>
+    <string name="space_xs">Spazio</string>
+    <string name="keyboard_toggle_xs">Usa tastiera di sistema</string>
+    <string name="hello_world_example_loaded">Esempio Hello World caricato</string>
+    <string name="save">Salva</string>
+    <string name="load">Carica...</string>
+    <string name="nothing_to_save">Non c\'è nulla da salvare</string>
+    <string name="filename">Nome del file</string>
+    <string name="file_saved">File salvato</string>
+    <string name="file_save_error">Errore durante il salvataggio del file</string>
+    <string name="title_activity_file">Script salvati</string>
+    <string name="no_saved_scripts">Salva i tuoi script o muovi i file nella cartella %s</string>
+    <string name="files_load_error">Errore durante il caricamento dei file salvati</string>
+    <string name="delete">Cancella</string>
+    <string name="rename">Rinomina</string>
+    <string name="file_rename_error">Errore durante la rinominazione del file</string>
+    <string name="file_load_error">Errore durante il caricamento del file</string>
+    <string name="file_loaded_format">File \'%s\' caricato</string>
+    <string name="undo">Annulla</string>
+    <string name="delete_confirmation_pt1_singular">Sei sicuro di voler cancellare il file</string>
+    <string name="deleting_files">Cancellazione dei file</string>
+    <string name="delete_confirmation_pt2">\?</string>
+    <string name="delete_confirmation_pt1_plural">Sei sicuro di voler cancellare i file</string>
+    <string name="and">e</string>
+    <string name="theme">Tema</string>
+    <string name="theme_ellipsis">Tema…</string>
+    <string name="day_theme">Tema chiaro</string>
+    <string name="night_theme">Tema scuro</string>
+    <string name="system_default_theme">Predefinito del sistema</string>
 </resources>

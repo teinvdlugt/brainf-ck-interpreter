@@ -62,6 +62,7 @@
     <string name="undo">Undo</string>
     <string name="delete_confirmation_pt1_singular">Are you sure you want to delete the file</string>
     <string name="delete_confirmation_pt1_plural">Are you sure you want to delete the files</string>
+    <string name="and">and</string>
     <string name="delete_confirmation_pt2">\?</string> <!-- Resulting string: pt1 + " <file1>, <file2> and <file3> " + pt2 -->
     <string name="deleting_files">Deleting files</string>
 

@@ -112,7 +112,7 @@ public class FilesActivity extends AppCompatActivity {
                     if (i < filenames.size() - 2)
                         sb.append(", ");
                     else if (i == filenames.size() - 2)
-                        sb.append(" and ");
+                        sb.append(getString(R.string.and));
                 }
                 sb.append(getString(R.string.delete_confirmation_pt2));
 
