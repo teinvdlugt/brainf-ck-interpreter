@@ -14,7 +14,7 @@
     <string name="hello_world_description">Este exemplo carregará um código que escreverá \\\"Hello World!\\\" na tela e  apagará o código que está atualmente no campo de texto. Deseja continuar?</string>
     <string name="hello_world_positive_button">Continuar</string>
     <string name="menu_output">Resultado</string>
-    <string name="output_in">Resultado em...</string>
+    <string name="output_in">Resultado em…</string>
     <string name="ascii">ASCII</string>
     <string name="decimal">Decimal</string>
     <string name="error">Erro</string>

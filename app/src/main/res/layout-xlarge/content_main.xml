@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:id="@+id/root"
-    tools:context="com.teinvdlugt.android.brainfuckinterpreter.MainActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cellRecyclerView"
@@ -40,13 +40,12 @@
                 tools:visibility="visible" />
 
             <TextView
-                android:fontFamily="monospace"
                 android:id="@+id/output_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/clearOutputButton"
                 android:layout_toStartOf="@id/clearOutputButton"
-                android:textColor="@android:color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="24sp"
                 android:typeface="monospace"
                 android:visibility="gone"
@@ -54,6 +53,7 @@
                 tools:visibility="visible" />
 
             <EditText
+                android:fontFamily="monospace"
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,10 +71,8 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_keyboard_24dp"
         android:layout_gravity="end"
-        app:backgroundTint="@android:color/white"
         android:elevation="4dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginEnd="16dp" />
 
     <com.teinvdlugt.android.brainfuckinterpreter.Keyboard
         android:id="@+id/keyboard"

@@ -8,8 +8,8 @@ android {
         applicationId "com.teinvdlugt.android.brainfuckinterpreter"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 14
-        versionName "1.2"
+        versionCode 15
+        versionName "1.2.2"
     }
     buildTypes {
         release {
